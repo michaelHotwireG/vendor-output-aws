@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Marketplace — Campaign Data Entry</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f3ef;
+  --white:#ffffff;
+  --black:#0f0f0d;
+  --aws:#232f3e;
+  --aws-orange:#ff9900;
+  --aws-orange-light:#fff3db;
+  --border:#d8d6cf;
+  --border-focus:#ff9900;
+  --text:#1a1a16;
+  --muted:#6b6860;
+  --surface:#faf9f6;
+  --error:#c0392b;
+  --error-light:#fdf0ee;
+  --success:#1a6b4a;
+  --success-light:#e8f5ef;
+  --info:#1a4a8a;
+  --info-light:#e8f0fb;
+  --conditional:#7b4fb5;
+  --conditional-light:#f3eefb;
+}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
+
+/* HEADER */
+.header{background:var(--aws);padding:0;position:sticky;top:0;z-index:200;}
+.header-inner{display:flex;align-items:center;gap:0;max-width:900px;margin:0 auto;}
+.header-logo{background:var(--aws-orange);padding:14px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--aws);letter-spacing:0.02em;white-space:nowrap;}
+.header-title{padding:14px 20px;color:rgba(255,255,255,0.9);font-size:13px;font-weight:300;letter-spacing:0.04em;}
+.progress-bar{height:3px;background:rgba(255,255,255,0.1);}
+.progress-fill{height:100%;background:var(--aws-orange);transition:width 0.3s ease;width:0%;}
+
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* SECTION */
+.section{margin-bottom:2rem;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:8px;border-bottom:2px solid var(--aws);}
+.section-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;background:var(--aws);color:var(--aws-orange);padding:3px 8px;border-radius:2px;}
+.section-title{font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--aws);}
+.section-desc{font-size:12px;color:var(--muted);margin-left:auto;}
+
+/* GRID */
+.field-grid{display:grid;gap:12px;}
+.field-grid.cols-2{grid-template-columns:1fr 1fr;}
+.field-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.field-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.full{grid-column:1/-1;}
+
+/* FIELD */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;display:flex;align-items:center;gap:6px;}
+.req-star{color:var(--aws-orange);font-size:13px;line-height:1;}
+.cond-tag{font-size:9px;background:var(--conditional-light);color:var(--conditional);padding:1px 5px;border-radius:2px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
+.opt-tag{font-size:9px;background:var(--bg);color:var(--muted);padding:1px 5px;border-radius:2px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;border:1px solid var(--border);}
+
+.field input,.field select,.field textarea{
+  padding:9px 11px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:13px;
+  background:var(--white);
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.15s,background 0.15s;
+  width:100%;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border-focus);background:var(--aws-orange-light);}
+.field input.error,.field select.error,.field textarea.error{border-color:var(--error);background:var(--error-light);}
+.field input[readonly]{background:var(--bg);color:var(--muted);cursor:default;}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.field textarea{resize:vertical;min-height:70px;}
+.field-hint{font-size:11px;color:var(--muted);margin-top:2px;}
+.field-error{font-size:11px;color:var(--error);margin-top:2px;display:none;}
+
+/* CONDITIONAL FIELDS */
+.conditional-block{
+  border:1px solid var(--conditional);
+  border-radius:6px;
+  padding:14px;
+  background:var(--conditional-light);
+  display:none;
+  margin-top:4px;
+}
+.conditional-block.visible{display:block;}
+.conditional-label{font-size:10px;font-weight:500;color:var(--conditional);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.conditional-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--conditional);}
+
+/* METRICS SECTION */
+.metrics-block{border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.metrics-header{background:var(--aws);color:var(--aws-orange);font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;padding:8px 14px;letter-spacing:0.06em;}
+.metrics-body{padding:14px;background:var(--white);}
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.metric-row:last-child{margin-bottom:0;}
+.metric-field{position:relative;}
+.metric-field.disabled input{background:var(--bg);color:var(--border);cursor:not-allowed;}
+.metric-field.active input{background:var(--white);}
+.metric-badge{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;padding:1px 4px;border-radius:2px;font-weight:500;}
+.badge-email{background:#dbeafe;color:#1e40af;}
+.badge-display{background:#dcfce7;color:#166534;}
+.badge-linkedin{background:#e0e7ff;color:#3730a3;}
+.badge-all{background:#fef9c3;color:#854d0e;}
+
+/* SUBMIT */
+.submit-area{margin-top:2rem;display:flex;gap:12px;align-items:center;}
+.submit-btn{padding:13px 32px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s,transform 0.1s;letter-spacing:0.02em;}
+.submit-btn:hover{background:#e88a00;}
+.submit-btn:active{transform:scale(0.99);}
+.reset-btn{padding:13px 20px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;transition:background 0.12s;}
+.reset-btn:hover{background:var(--white);}
+.error-summary{font-size:13px;color:var(--error);display:none;}
+
+/* SUCCESS */
+#successSection{display:none;padding:3rem 0;}
+.success-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:2.5rem;text-align:center;max-width:520px;margin:0 auto;}
+.success-icon{width:48px;height:48px;background:var(--success-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:22px;}
+.success-title{font-size:20px;font-weight:500;margin-bottom:8px;}
+.success-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+.success-meta{background:var(--bg);border-radius:6px;padding:14px;text-align:left;font-size:12px;margin-bottom:1.5rem;}
+.success-meta-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);}
+.success-meta-row:last-child{border-bottom:none;}
+.success-meta-row span:first-child{color:var(--muted);}
+.success-meta-row span:last-child{font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.save-status{font-size:12px;padding:8px 14px;border-radius:4px;margin-bottom:12px;}
+.save-status.saving{background:var(--bg);color:var(--muted);}
+.save-status.saved{background:var(--success-light);color:var(--success);}
+.save-status.failed{background:var(--error-light);color:var(--error);}
+.new-btn{padding:11px 24px;background:var(--aws);color:var(--white);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;}
+
+@media(max-width:600px){
+  .field-grid.cols-2,.field-grid.cols-3,.field-grid.cols-4{grid-template-columns:1fr;}
+  .metric-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">AWS Marketplace</div>
+    <div class="header-title">Campaign Data Entry — Vendor Form</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="container" id="formSection">
+
+  <!-- SECTION 1: CAMPAIGN INFO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Campaign Information</span>
+    </div>
+    <div class="field-grid cols-2">
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> Campaign Type</label>
+        <select id="campaignType" onchange="onCampaignTypeChange()">
+          <option value="">— Select —</option>
+          <option value="AWS Marketplace">AWS Marketplace</option>
+          <option value="AWS Marketplace - Thematic">AWS Marketplace - Thematic</option>
+        </select>
+        <div class="field-error" id="err-campaignType">Campaign type is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> Tactic Type</label>
+        <select id="tacticType" onchange="onTacticTypeChange()">
+          <option value="">— Select —</option>
+          <!-- MOCK — replace with real list -->
+          <option value="Dedicated Email">Dedicated Email</option>
+          <option value="Newsletter">Newsletter</option>
+          <option value="Display">Display</option>
+          <option value="LinkedIn Group Post">LinkedIn Group Post</option>
+        </select>
+        <div class="field-error" id="err-tacticType">Tactic type is required</div>
+      </div>
+    </div>
+
+    <!-- CONDITIONAL: Thematic fields -->
+    <div class="conditional-block" id="thematicBlock">
+      <div class="conditional-label">Required for Thematic campaigns</div>
+      <div class="field-grid cols-2">
+        <div class="field">
+          <label class="field-label"><span class="req-star">*</span> Campaign Theme <span class="cond-tag">Thematic only</span></label>
+          <select id="campaignTheme" onchange="onThemeChange()">
+            <option value="">— Select —</option>
+            <!-- MOCK — replace with real themes -->
+            <option value="Data & AI">Data & AI</option>
+            <option value="Security">Security</option>
+            <option value="BizApps">BizApps</option>
+            <option value="Industry">Industry</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Migration">Migration</option>
+          </select>
+          <div class="field-error" id="err-campaignTheme">Campaign theme is required for Thematic</div>
+        </div>
+        <div class="field" id="subthemeField" style="display:none">
+          <label class="field-label"><span class="req-star">*</span> Campaign Sub-theme <span class="cond-tag">BizApps / Industry</span></label>
+          <select id="campaignSubtheme">
+            <option value="">— Select —</option>
+            <!-- MOCK — replace with real sub-themes -->
+            <option value="Financial Services">Financial Services</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Retail">Retail</option>
+            <option value="Manufacturing">Manufacturing</option>
+            <option value="CRM">CRM</option>
+            <option value="ERP">ERP</option>
+            <option value="Analytics">Analytics</option>
+          </select>
+          <div class="field-error" id="err-campaignSubtheme">Sub-theme is required for BizApps / Industry</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: VENDOR & PUBLICATION -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Vendor & Publication</span>
+    </div>
+    <div class="field-grid cols-2">
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> Vendor Name</label>
+        <select id="vendorName" onchange="onVendorChange()">
+          <option value="">— Select vendor —</option>
+        </select>
+        <div class="field-error" id="err-vendorName">Vendor name is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> Publication Name</label>
+        <select id="publicationName" onchange="onPublicationChange()">
+          <option value="">— Select publication —</option>
+        </select>
+        <div class="field-error" id="err-publicationName">Publication name is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Publication ID</label>
+        <input type="text" id="publicationId" readonly placeholder="Auto-filled from publication"/>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> Promotion Name <span class="cond-tag">Controlled list</span></label>
+        <select id="promotionName" onchange="onPromotionChange()">
+          <option value="">— Select promotion —</option>
+          <!-- MOCK — replace with real promotions -->
+          <option value="D/AI FEB">D/AI FEB</option>
+          <option value="Security MAR">Security MAR</option>
+          <option value="BizApps APR">BizApps APR</option>
+          <option value="Industry MAY">Industry MAY</option>
+          <option value="Infrastructure JUN">Infrastructure JUN</option>
+          <option value="Migration JUL">Migration JUL</option>
+          <option value="Data & AI AUG">Data & AI AUG</option>
+          <option value="Security SEP">Security SEP</option>
+        </select>
+        <div class="field-error" id="err-promotionName">Promotion name is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Promotion Month <span class="opt-tag">Derived</span></label>
+        <input type="text" id="promotionMonth" readonly placeholder="Derived from promotion"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: TRACKING -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Tracking</span>
+    </div>
+    <div class="field-grid cols-2">
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> TRK Code</label>
+        <input type="text" id="trk" placeholder="e.g. trk_example_001"/>
+        <div class="field-hint">Provided by vendor</div>
+        <div class="field-error" id="err-trk">TRK code is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label"><span class="req-star">*</span> CTA URL</label>
+        <input type="url" id="ctaUrl" placeholder="https://aws.amazon.com/..."/>
+        <div class="field-hint">Provided by vendor</div>
+        <div class="field-error" id="err-ctaUrl">CTA URL is required</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: PERFORMANCE METRICS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Performance Metrics</span>
+      <span class="section-desc">Fields activate based on tactic type</span>
+    </div>
+    <div class="metrics-block">
+      <div class="metrics-header">DELIVERY & ENGAGEMENT METRICS</div>
+      <div class="metrics-body">
+
+        <div class="metric-row">
+          <div class="field metric-field" id="mf-deliveredSends">
+            <label class="field-label">Delivered Sends <span class="badge-email metric-badge">Email</span></label>
+            <input type="number" id="deliveredSends" placeholder="—" min="0" disabled/>
+            <div class="field-hint">Email / Newsletter only</div>
+          </div>
+          <div class="field metric-field" id="mf-opens">
+            <label class="field-label">Opens <span class="badge-email metric-badge">Email</span></label>
+            <input type="number" id="opens" placeholder="—" min="0" disabled/>
+            <div class="field-hint">Email / Newsletter only</div>
+          </div>
+          <div class="field metric-field" id="mf-impressions">
+            <label class="field-label">Impressions <span class="badge-display metric-badge">Display</span></label>
+            <input type="number" id="impressions" placeholder="—" min="0" disabled/>
+            <div class="field-hint">Display / LinkedIn only</div>
+          </div>
+        </div>
+
+        <div class="metric-row">
+          <div class="field metric-field" id="mf-linkedinLikes">
+            <label class="field-label">LinkedIn Likes <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+            <input type="number" id="linkedinLikes" placeholder="—" min="0" disabled/>
+          </div>
+          <div class="field metric-field" id="mf-linkedinComments">
+            <label class="field-label">LinkedIn Comments <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+            <input type="number" id="linkedinComments" placeholder="—" min="0" disabled/>
+          </div>
+          <div class="field metric-field" id="mf-linkedinViews">
+            <label class="field-label">LinkedIn Views <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+            <input type="number" id="linkedinViews" placeholder="—" min="0" disabled/>
+          </div>
+        </div>
+
+        <div class="metric-row">
+          <div class="field metric-field" id="mf-clicks">
+            <label class="field-label"><span class="req-star">*</span> Clicks <span class="badge-all metric-badge">All</span></label>
+            <input type="number" id="clicks" placeholder="Whole number" min="0"/>
+            <div class="field-error" id="err-clicks">Clicks is required (whole number)</div>
+          </div>
+          <div class="field metric-field" id="mf-uniqueClicks">
+            <label class="field-label">Unique Clicks <span class="opt-tag">Optional</span></label>
+            <input type="number" id="uniqueClicks" placeholder="Whole number" min="0"/>
+          </div>
+          <div class="field"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: NOTES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Notes</span>
+    </div>
+    <div class="field">
+      <label class="field-label">Notes <span class="opt-tag">Optional</span></label>
+      <textarea id="notes" placeholder="Any additional context or comments..." maxlength="500"></textarea>
+      <div class="field-hint"><span id="notesCount">0</span>/500 characters</div>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <button class="submit-btn" onclick="submitForm()">Submit Campaign Data</button>
+    <button class="reset-btn" onclick="resetForm()">Reset</button>
+    <span class="error-summary" id="errorSummary">Please fix the errors above before submitting.</span>
+  </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div class="container" id="successSection">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Submission received</div>
+    <div class="success-sub">Campaign data has been recorded successfully.</div>
+    <div class="save-status saving" id="saveStatus">Saving to Google Sheets...</div>
+    <div class="success-meta" id="successMeta"></div>
+    <button class="new-btn" onclick="resetForm()">Submit another entry</button>
+  </div>
+</div>
+
+<script>
+// ── REPLACE WITH YOUR GOOGLE APPS SCRIPT URL ──────────────────────────────
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYEKJBhILc6q6U_zuYQi6YSibFtHlz29IQV5pu5HFdComn6OJvZ1XyhppSYwLeu5gM/exec";
+
+// ── PUBLICATION DATA ───────────────────────────────────────────────────────
+const publications = [
+  {id:"PUB0001",vendor:"Future",name:"AdvaMed"},
+  {id:"PUB0002",vendor:"Future",name:"AHIMA (SmartBrief)"},
+  {id:"PUB0003",vendor:"TLDR",name:"AI"},
+  {id:"PUB0004",vendor:"Steve Nouri Network",name:"AI Frontier"},
+  {id:"PUB0005",vendor:"CIO.com",name:"AI in the Enterprise"},
+  {id:"PUB0006",vendor:"7wData",name:"AIBeat"},
+  {id:"PUB0007",vendor:"iEntry",name:"AIDeveloper (WPN)"},
+  {id:"PUB0008",vendor:"Future",name:"AIIM (SmartBrief)"},
+  {id:"PUB0009",vendor:"iEntry",name:"AITrends (WPN)"},
+  {id:"PUB0010",vendor:"BigDATAwire",name:"AIwire"},
+  {id:"PUB0011",vendor:"TechCrunch",name:"AM"},
+  {id:"PUB0012",vendor:"Future",name:"AMIA"},
+  {id:"PUB0013",vendor:"Future",name:"ANA Marketing Leadership (SmartBrief)"},
+  {id:"PUB0014",vendor:"iEntry",name:"AppDevNews (WPN)"},
+  {id:"PUB0015",vendor:"iEntry",name:"AppsDevNews (WPN)"},
+  {id:"PUB0016",vendor:"iSMG",name:"Bank Info Security"},
+  {id:"PUB0017",vendor:"Jonathan Roberts",name:"Big Data - Data Warehouse - IoT - Cloud - AI - Machine Learning - Blockchain"},
+  {id:"PUB0018",vendor:"Jonathan Roberts",name:"Big Data Developers Group"},
+  {id:"PUB0019",vendor:"iEntry",name:"BizDevUpdate (WPN)"},
+  {id:"PUB0020",vendor:"iEntry",name:"CallCenterPro (WPN)"},
+  {id:"PUB0021",vendor:"BuySellAds",name:"Carbon Ads: Dev Circle"},
+  {id:"PUB0022",vendor:"Future",name:"CBA (SmartBrief)"},
+  {id:"PUB0023",vendor:"iEntry",name:"CDOPro (WPN)"},
+  {id:"PUB0024",vendor:"iEntry",name:"CEOTrends (WPN)"},
+  {id:"PUB0025",vendor:"iEntry",name:"CIOProNews (WPN)"},
+  {id:"PUB0026",vendor:"iEntry",name:"CISOUpdate"},
+  {id:"PUB0027",vendor:"iEntry",name:"CloudRevolutionUpdate"},
+  {id:"PUB0028",vendor:"iEntry",name:"CloudSecurityUpdate (WPN)"},
+  {id:"PUB0029",vendor:"iEntry",name:"CMOTrends (WPN)"},
+  {id:"PUB0030",vendor:"Simpler Media",name:"CMS Wire"},
+  {id:"PUB0031",vendor:"BuySellAds",name:"CodePen Display"},
+  {id:"PUB0032",vendor:"BuySellAds",name:"CodePen Newsletter"},
+  {id:"PUB0033",vendor:"BuySellAds",name:"CodePen Spark"},
+  {id:"PUB0034",vendor:"Future",name:"CompTIA (SmartBrief)"},
+  {id:"PUB0035",vendor:"iEntry",name:"COOUpdate (WPN)"},
+  {id:"PUB0036",vendor:"iEntry",name:"CSOPro"},
+  {id:"PUB0037",vendor:"iEntry",name:"CTOUpdate (WPN)"},
+  {id:"PUB0038",vendor:"iEntry",name:"CustomerExperienceNews (WPN)"},
+  {id:"PUB0039",vendor:"iEntry",name:"CybersecurityUpdate"},
+  {id:"PUB0040",vendor:"N2K",name:"Cyberwire"},
+  {id:"PUB0041",vendor:"BuySellAds",name:"Daily.dev"},
+  {id:"PUB0042",vendor:"TLDR",name:"Data"},
+  {id:"PUB0043",vendor:"AIgents",name:"Data Science Community"},
+  {id:"PUB0044",vendor:"iEntry",name:"DatabaseProNews (WPN)"},
+  {id:"PUB0045",vendor:"Informa TechTarget",name:"Datascience central"},
+  {id:"PUB0046",vendor:"Information Today",name:"Destination CRM"},
+  {id:"PUB0047",vendor:"iEntry",name:"DevNews (WPN)"},
+  {id:"PUB0048",vendor:"TLDR",name:"DevOps"},
+  {id:"PUB0049",vendor:"iEntry",name:"DevOpsUpdate (WPN)"},
+  {id:"PUB0050",vendor:"iEntry",name:"DevSecOpsPro (WPN)"},
+  {id:"PUB0051",vendor:"iEntry",name:"DevSecurityOpsPro (WPN)"},
+  {id:"PUB0052",vendor:"iEntry",name:"DevSecurityPro (WPN)"},
+  {id:"PUB0053",vendor:"iEntry",name:"DevWebPro"},
+  {id:"PUB0054",vendor:"iEntry",name:"DigitalExperiencePro (WPN)"},
+  {id:"PUB0055",vendor:"Technology Advice",name:"DZone"},
+  {id:"PUB0056",vendor:"iEntry",name:"EdgeComputingPro"},
+  {id:"PUB0057",vendor:"AIgents",name:"Eggflame"},
+  {id:"PUB0058",vendor:"iEntry",name:"EmergingTechUpdate"},
+  {id:"PUB0059",vendor:"iEntry",name:"EmployeeExperiencePro (WPN)"},
+  {id:"PUB0060",vendor:"iEntry",name:"EnterpriseCustomer (WPN)"},
+  {id:"PUB0061",vendor:"iEntry",name:"EnterpriseSecurity (WPN)"},
+  {id:"PUB0062",vendor:"Future",name:"Finseca SmartBrief"},
+  {id:"PUB0063",vendor:"iEntry",name:"GenAIPro (WPN)"},
+  {id:"PUB0064",vendor:"HIMSS",name:"Healthcare Finance (Daily)"},
+  {id:"PUB0065",vendor:"HIMSS",name:"Healthcare Finance (Weekly)"},
+  {id:"PUB0066",vendor:"HIMSS",name:"Healthcare IT News (Daily)"},
+  {id:"PUB0067",vendor:"HIMSS",name:"Healthcare IT News (Weekly)"},
+  {id:"PUB0068",vendor:"iEntry",name:"HealthITPro (WPN)"},
+  {id:"PUB0069",vendor:"Interlink",name:"Hi-tech Insights"},
+  {id:"PUB0070",vendor:"iEntry",name:"HiTechEdge (WPN)"},
+  {id:"PUB0071",vendor:"Future",name:"Horizontal Intent SmartBrief"},
+  {id:"PUB0072",vendor:"Future",name:"Horizontal SmartBrief"},
+  {id:"PUB0073",vendor:"iEntry",name:"HRProNews (WPN)"},
+  {id:"PUB0074",vendor:"TechTarget",name:"Industry Dive CIO"},
+  {id:"PUB0075",vendor:"TLDR",name:"InfoSec"},
+  {id:"PUB0076",vendor:"iEntry",name:"InfoSecPro (WPN)"},
+  {id:"PUB0077",vendor:"BuySellAds",name:"Instapaper"},
+  {id:"PUB0078",vendor:"Future",name:"ISACA on Cybersecurity"},
+  {id:"PUB0079",vendor:"Future",name:"ISACA on SmartBrief"},
+  {id:"PUB0080",vendor:"Morning Brew",name:"IT Brew"},
+  {id:"PUB0081",vendor:"iEntry",name:"ITManagementNews (WPN)"},
+  {id:"PUB0082",vendor:"NextMedia PTY LTD",name:"ITNews"},
+  {id:"PUB0083",vendor:"iEntry",name:"ITProNews (WPN)"},
+  {id:"PUB0084",vendor:"ProspectBase",name:"KnowledgeCloud"},
+  {id:"PUB0085",vendor:"AIgents",name:"Machine Learning Community"},
+  {id:"PUB0086",vendor:"Marketing Brew",name:"Morning Brew"},
+  {id:"PUB0087",vendor:"BuySellAds",name:"Mozilla Developer Network"},
+  {id:"PUB0088",vendor:"Edgewood Solutions LLC",name:"MSSQLTips.com"},
+  {id:"PUB0089",vendor:"Future",name:"NAB (SmartBrief)"},
+  {id:"PUB0090",vendor:"iEntry",name:"NetworkNews"},
+  {id:"PUB0091",vendor:"Future",name:"NRF (SmartBrief)"},
+  {id:"PUB0092",vendor:"Future",name:"NRF Next (SmartBrief)"},
+  {id:"PUB0093",vendor:"iEntry",name:"ObservabilityTrends (WPN)"},
+  {id:"PUB0094",vendor:"BuySellAds",name:"Product Hunt - Frontier AI"},
+  {id:"PUB0095",vendor:"BuySellAds",name:"Prompts Daily"},
+  {id:"PUB0096",vendor:"BuySellAds",name:"Rendezvous with Cassidoo"},
+  {id:"PUB0097",vendor:"Simpler Media",name:"Reworked"},
+  {id:"PUB0098",vendor:"iEntry",name:"SecurityProNews (WPN)"},
+  {id:"PUB0099",vendor:"Future",name:"SIFMA"},
+  {id:"PUB0100",vendor:"Future",name:"SIFMA SmartBrief: Operations and Technology Edition"},
+  {id:"PUB0101",vendor:"Future",name:"SIG (SmartBrief)"},
+  {id:"PUB0102",vendor:"BuySellAds",name:"SitePoint"},
+  {id:"PUB0103",vendor:"Future",name:"SmartBrief"},
+  {id:"PUB0104",vendor:"Future",name:"SmartBrief (Finance Portfolio)"},
+  {id:"PUB0105",vendor:"Future",name:"SmartBrief (HC Portfolio)"},
+  {id:"PUB0106",vendor:"Future",name:"SmartBrief (Horizontal INTENT)"},
+  {id:"PUB0107",vendor:"Future",name:"SmartBrief (Horizontal TAL)"},
+  {id:"PUB0108",vendor:"Future",name:"SmartBrief (Horizontal)"},
+  {id:"PUB0109",vendor:"Future",name:"SmartBrief for Healthcare Leaders"},
+  {id:"PUB0110",vendor:"Future",name:"SmartBrief on Biotech Innovation"},
+  {id:"PUB0111",vendor:"Future",name:"SmartBrief on Leadership"},
+  {id:"PUB0112",vendor:"Future",name:"SmartBrief on M&E"},
+  {id:"PUB0113",vendor:"Future",name:"SmartBrief on Workforce"},
+  {id:"PUB0114",vendor:"iEntry",name:"SOCUpdate"},
+  {id:"PUB0115",vendor:"BuySellAds",name:"Software Engineering Daily"},
+  {id:"PUB0116",vendor:"iEntry",name:"SoftwareEngineerNews (WPN)"},
+  {id:"PUB0117",vendor:"Jonathan Roberts",name:"Spark Developers Group"},
+  {id:"PUB0118",vendor:"Stack Overflow",name:"Stack Exchange"},
+  {id:"PUB0119",vendor:"BuySellAds",name:"Superhuman AI"},
+  {id:"PUB0120",vendor:"Energize",name:"Tech Resources"},
+  {id:"PUB0121",vendor:"Future",name:"Technology Broadcast Engineers"},
+  {id:"PUB0122",vendor:"BizClickMedia",name:"Technology Magazine"},
+  {id:"PUB0123",vendor:"BuySellAds",name:"The AI Report"},
+  {id:"PUB0124",vendor:"MIT Tech Review",name:"The Algorithm"},
+  {id:"PUB0125",vendor:"MIT Tech Review",name:"The Download"},
+  {id:"PUB0126",vendor:"BuySellAds",name:"The Rundown AI"},
+  {id:"PUB0127",vendor:"BuySellAds",name:"There's An AI for That"},
+  {id:"PUB0128",vendor:"Future",name:"TVTech"},
+  {id:"PUB0129",vendor:"Virtual Intelligence Briefing",name:"VIB"},
+  {id:"PUB0130",vendor:"TLDR",name:"WebDev"},
+  {id:"PUB0131",vendor:"iEntry",name:"WebProNews"},
+  {id:"PUB0132",vendor:"Future",name:"WISPA (SmartBrief)"},
+  {id:"PUB0133",vendor:"Accel Social",name:"Accel Social"},
+  {id:"PUB0134",vendor:"AICamp",name:"AICamp"},
+  {id:"PUB0135",vendor:"Anteriad",name:"Anteriad"},
+  {id:"PUB0136",vendor:"CanalTech",name:"CanalTech"},
+  {id:"PUB0137",vendor:"CDO",name:"CDO"},
+  {id:"PUB0138",vendor:"CyberDefense Magazine",name:"CyberDefense Magazine"},
+  {id:"PUB0139",vendor:"Cyber Risk Alliance",name:"Cyber Risk Alliance"},
+  {id:"PUB0140",vendor:"Cybersecurity Insiders",name:"Cybersecurity Insiders"},
+  {id:"PUB0141",vendor:"Dark Reading Weekly",name:"Dark Reading Weekly"},
+  {id:"PUB0142",vendor:"Dataversity",name:"Dataversity"},
+  {id:"PUB0143",vendor:"Data Science Connect",name:"Data Science Connect"},
+  {id:"PUB0144",vendor:"Decode Media SAS",name:"Decode Media SAS"},
+  {id:"PUB0145",vendor:"HIMSS",name:"HIMSS"},
+  {id:"PUB0146",vendor:"Information Security Network",name:"Information Security Network"},
+  {id:"PUB0147",vendor:"Informa TechTarget",name:"Informa TechTarget"},
+  {id:"PUB0148",vendor:"Invenew",name:"Invenew"},
+  {id:"PUB0149",vendor:"ISSA",name:"ISSA"},
+  {id:"PUB0150",vendor:"IT News Info",name:"IT News Info"},
+  {id:"PUB0151",vendor:"Light Reading Weekly",name:"Light Reading Weekly"},
+  {id:"PUB0152",vendor:"Marketing Brew",name:"Marketing Brew"},
+  {id:"PUB0153",vendor:"Mayrit",name:"Mayrit"},
+  {id:"PUB0154",vendor:"Morning Brew",name:"Morning Brew"},
+  {id:"PUB0155",vendor:"NetMedia Europe",name:"NetMedia Europe"},
+  {id:"PUB0156",vendor:"Network Engineer Professionals",name:"Network Engineer Professionals"},
+  {id:"PUB0157",vendor:"Publicaciones Tecnológicas MKM",name:"Publicaciones Tecnológicas MKM"},
+  {id:"PUB0158",vendor:"Ravit",name:"Ravit"},
+  {id:"PUB0159",vendor:"Reworld Media Connect",name:"Reworld Media Connect"},
+  {id:"PUB0160",vendor:"Stack Overflow",name:"Stack Overflow"},
+  {id:"PUB0161",vendor:"Steve Nouri Network",name:"Steve Nouri Network"},
+  {id:"PUB0162",vendor:"United States Cybersecurity Magazine",name:"United States Cybersecurity Magazine"},
+  {id:"PUB0163",vendor:"VMBlog",name:"VMBlog"}
+];
+
+// Promotion month mapping (MOCK — replace with real data)
+const promotionMonths = {
+  "D/AI FEB":"February","Security MAR":"March","BizApps APR":"April",
+  "Industry MAY":"May","Infrastructure JUN":"June","Migration JUL":"July",
+  "Data & AI AUG":"August","Security SEP":"September"
+};
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+function init() {
+  // Populate vendor dropdown (unique sorted vendors)
+  const vendors = [...new Set(publications.map(p => p.vendor))].sort();
+  const vendorSel = document.getElementById('vendorName');
+  vendors.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    vendorSel.appendChild(opt);
+  });
+
+  // Notes counter
+  document.getElementById('notes').addEventListener('input', function() {
+    document.getElementById('notesCount').textContent = this.value.length;
+  });
+
+  updateProgress();
+}
+
+// ── CAMPAIGN TYPE CHANGE ───────────────────────────────────────────────────
+function onCampaignTypeChange() {
+  const val = document.getElementById('campaignType').value;
+  const block = document.getElementById('thematicBlock');
+  block.classList.toggle('visible', val === 'AWS Marketplace - Thematic');
+  if (val !== 'AWS Marketplace - Thematic') {
+    document.getElementById('campaignTheme').value = '';
+    document.getElementById('campaignSubtheme').value = '';
+    document.getElementById('subthemeField').style.display = 'none';
+  }
+  updateProgress();
+}
+
+// ── THEME CHANGE ───────────────────────────────────────────────────────────
+function onThemeChange() {
+  const theme = document.getElementById('campaignTheme').value;
+  const subField = document.getElementById('subthemeField');
+  const needsSub = theme === 'BizApps' || theme === 'Industry';
+  subField.style.display = needsSub ? 'block' : 'none';
+  if (!needsSub) document.getElementById('campaignSubtheme').value = '';
+  updateProgress();
+}
+
+// ── VENDOR CHANGE ──────────────────────────────────────────────────────────
+function onVendorChange() {
+  const vendor = document.getElementById('vendorName').value;
+  const pubSel = document.getElementById('publicationName');
+  pubSel.innerHTML = '<option value="">— Select publication —</option>';
+  document.getElementById('publicationId').value = '';
+
+  if (vendor) {
+    const pubs = publications.filter(p => p.vendor === vendor).sort((a,b) => a.name.localeCompare(b.name));
+    pubs.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.name; opt.dataset.id = p.id; opt.textContent = p.name;
+      pubSel.appendChild(opt);
+    });
+    if (pubs.length === 1) {
+      pubSel.value = pubs[0].name;
+      document.getElementById('publicationId').value = pubs[0].id;
+    }
+  }
+  updateProgress();
+}
+
+// ── PUBLICATION CHANGE ─────────────────────────────────────────────────────
+function onPublicationChange() {
+  const pubSel = document.getElementById('publicationName');
+  const selected = pubSel.options[pubSel.selectedIndex];
+  document.getElementById('publicationId').value = selected ? (selected.dataset.id || '') : '';
+  updateProgress();
+}
+
+// ── PROMOTION CHANGE ───────────────────────────────────────────────────────
+function onPromotionChange() {
+  const promo = document.getElementById('promotionName').value;
+  document.getElementById('promotionMonth').value = promotionMonths[promo] || '';
+  updateProgress();
+}
+
+// ── TACTIC TYPE CHANGE ─────────────────────────────────────────────────────
+function onTacticTypeChange() {
+  const tactic = document.getElementById('tacticType').value;
+  const isEmail = tactic === 'Dedicated Email' || tactic === 'Newsletter';
+  const isDisplay = tactic === 'Display';
+  const isLinkedIn = tactic === 'LinkedIn Group Post';
+
+  setMetric('deliveredSends', isEmail);
+  setMetric('opens', isEmail);
+  setMetric('impressions', isDisplay || isLinkedIn);
+  setMetric('linkedinLikes', isLinkedIn);
+  setMetric('linkedinComments', isLinkedIn);
+  setMetric('linkedinViews', isLinkedIn);
+  updateProgress();
+}
+
+function setMetric(id, active) {
+  const input = document.getElementById(id);
+  const wrap = document.getElementById('mf-' + id);
+  input.disabled = !active;
+  input.value = active ? (input.value || '') : '';
+  if (wrap) wrap.classList.toggle('active', active);
+  if (wrap) wrap.classList.toggle('disabled', !active);
+}
+
+// ── PROGRESS ───────────────────────────────────────────────────────────────
+function updateProgress() {
+  const fields = ['campaignType','tacticType','vendorName','publicationName','promotionName','trk','ctaUrl','clicks'];
+  const filled = fields.filter(f => document.getElementById(f).value.trim() !== '').length;
+  document.getElementById('progressFill').style.width = (filled / fields.length * 100) + '%';
+}
+
+document.addEventListener('input', updateProgress);
+
+// ── VALIDATION ─────────────────────────────────────────────────────────────
+function validate() {
+  let valid = true;
+
+  function check(id, condition) {
+    const el = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    const fail = condition ? !el.value.trim() : false;
+    el.classList.toggle('error', fail);
+    if (err) err.style.display = fail ? 'block' : 'none';
+    if (fail) valid = false;
+  }
+
+  check('campaignType', true);
+  check('tacticType', true);
+  check('vendorName', true);
+  check('publicationName', true);
+  check('promotionName', true);
+  check('trk', true);
+  check('ctaUrl', true);
+  check('clicks', true);
+
+  const isThematic = document.getElementById('campaignType').value === 'AWS Marketplace - Thematic';
+  check('campaignTheme', isThematic);
+
+  const theme = document.getElementById('campaignTheme').value;
+  const needsSub = isThematic && (theme === 'BizApps' || theme === 'Industry');
+  check('campaignSubtheme', needsSub);
+
+  return valid;
+}
+
+// ── SUBMIT ─────────────────────────────────────────────────────────────────
+function submitForm() {
+  if (!validate()) {
+    document.getElementById('errorSummary').style.display = 'inline';
+    document.querySelector('.submit-btn').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  const payload = {
+    campaignType:      document.getElementById('campaignType').value,
+    tacticType:        document.getElementById('tacticType').value,
+    campaignTheme:     document.getElementById('campaignTheme').value,
+    campaignSubtheme:  document.getElementById('campaignSubtheme').value,
+    vendorName:        document.getElementById('vendorName').value,
+    publicationId:     document.getElementById('publicationId').value,
+    publicationName:   document.getElementById('publicationName').value,
+    promotionName:     document.getElementById('promotionName').value,
+    promotionMonth:    document.getElementById('promotionMonth').value,
+    trk:               document.getElementById('trk').value,
+    ctaUrl:            document.getElementById('ctaUrl').value,
+    deliveredSends:    document.getElementById('deliveredSends').value,
+    opens:             document.getElementById('opens').value,
+    impressions:       document.getElementById('impressions').value,
+    linkedinLikes:     document.getElementById('linkedinLikes').value,
+    linkedinComments:  document.getElementById('linkedinComments').value,
+    linkedinViews:     document.getElementById('linkedinViews').value,
+    clicks:            document.getElementById('clicks').value,
+    uniqueClicks:      document.getElementById('uniqueClicks').value,
+    notes:             document.getElementById('notes').value
+  };
+
+  // Show success screen
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('successSection').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Populate success summary
+  document.getElementById('successMeta').innerHTML = [
+    ['Campaign Type', payload.campaignType],
+    ['Vendor', payload.vendorName],
+    ['Publication', payload.publicationName],
+    ['Publication ID', payload.publicationId],
+    ['Promotion', payload.promotionName],
+    ['Tactic Type', payload.tacticType],
+    ['Clicks', payload.clicks]
+  ].map(([k,v]) => `<div class="success-meta-row"><span>${k}</span><span>${v||'—'}</span></div>`).join('');
+
+  // Save to Google Sheets
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.className = 'save-status saving';
+  saveStatus.textContent = 'Saving to Google Sheets...';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    saveStatus.className = 'save-status saved';
+    saveStatus.textContent = '✓ Saved to Google Sheets';
+  })
+  .catch(() => {
+    saveStatus.className = 'save-status failed';
+    saveStatus.textContent = 'Could not save — please contact your administrator.';
+  });
+}
+
+// ── RESET ──────────────────────────────────────────────────────────────────
+function resetForm() {
+  document.querySelectorAll('input:not([readonly]), select, textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+  document.getElementById('thematicBlock').classList.remove('visible');
+  document.getElementById('subthemeField').style.display = 'none';
+  document.getElementById('publicationId').value = '';
+  document.getElementById('promotionMonth').value = '';
+  document.getElementById('notesCount').textContent = '0';
+  document.getElementById('errorSummary').style.display = 'none';
+  ['deliveredSends','opens','impressions','linkedinLikes','linkedinComments','linkedinViews'].forEach(id => setMetric(id, false));
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('successSection').style.display = 'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Re-populate vendor dropdown
+  const vendorSel = document.getElementById('vendorName');
+  vendorSel.innerHTML = '<option value="">— Select vendor —</option>';
+  const vendors = [...new Set(publications.map(p => p.vendor))].sort();
+  vendors.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    vendorSel.appendChild(opt);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
