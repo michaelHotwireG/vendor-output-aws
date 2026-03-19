@@ -3,140 +3,168 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>AWS Marketplace — Campaign Data Entry</title>
+<title>AWS Marketplace — Vendor Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#f4f3ef;
-  --white:#ffffff;
-  --black:#0f0f0d;
-  --aws:#232f3e;
-  --aws-orange:#ff9900;
-  --aws-orange-light:#fff3db;
-  --border:#d8d6cf;
-  --border-focus:#ff9900;
-  --text:#1a1a16;
-  --muted:#6b6860;
-  --surface:#faf9f6;
-  --error:#c0392b;
-  --error-light:#fdf0ee;
-  --success:#1a6b4a;
-  --success-light:#e8f5ef;
-  --info:#1a4a8a;
-  --info-light:#e8f0fb;
-  --conditional:#7b4fb5;
-  --conditional-light:#f3eefb;
+  --bg:#f4f3ef;--white:#ffffff;--black:#0f0f0d;
+  --aws:#232f3e;--aws-orange:#ff9900;--aws-orange-light:#fff3db;
+  --border:#d8d6cf;--text:#1a1a16;--muted:#6b6860;--surface:#faf9f6;
+  --error:#c0392b;--error-light:#fdf0ee;
+  --success:#1a6b4a;--success-light:#e8f5ef;
+  --warning:#8a5c00;--warning-light:#fef3d0;
+  --conditional:#7b4fb5;--conditional-light:#f3eefb;
 }
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;}
 
-/* HEADER */
+/* ── HEADER ── */
 .header{background:var(--aws);padding:0;position:sticky;top:0;z-index:200;}
-.header-inner{display:flex;align-items:center;gap:0;max-width:900px;margin:0 auto;}
-.header-logo{background:var(--aws-orange);padding:14px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--aws);letter-spacing:0.02em;white-space:nowrap;}
-.header-title{padding:14px 20px;color:rgba(255,255,255,0.9);font-size:13px;font-weight:300;letter-spacing:0.04em;}
-.progress-bar{height:3px;background:rgba(255,255,255,0.1);}
-.progress-fill{height:100%;background:var(--aws-orange);transition:width 0.3s ease;width:0%;}
+.header-inner{display:flex;align-items:center;max-width:960px;margin:0 auto;}
+.header-logo{background:var(--aws-orange);padding:14px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--aws);}
+.header-title{padding:14px 20px;color:rgba(255,255,255,0.9);font-size:13px;font-weight:300;letter-spacing:0.04em;flex:1;}
+.header-user{padding:14px 20px;color:var(--aws-orange);font-size:12px;font-family:'IBM Plex Mono',monospace;display:none;}
+.header-logout{padding:6px 14px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:3px;color:rgba(255,255,255,0.6);font-size:11px;cursor:pointer;margin-right:16px;font-family:'IBM Plex Sans',sans-serif;display:none;}
+.header-logout:hover{background:rgba(255,255,255,0.08);}
 
-.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+/* ── LOGIN ── */
+#loginSection{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 49px);padding:2rem;}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:2.5rem;width:100%;max-width:400px;}
+.login-logo{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--aws-orange);background:var(--aws);padding:4px 10px;border-radius:2px;display:inline-block;margin-bottom:1.5rem;}
+.login-title{font-size:20px;font-weight:500;margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:2rem;}
+.login-field{margin-bottom:14px;}
+.login-field label{display:block;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.15s;}
+.login-field input:focus{border-color:var(--aws-orange);}
+.login-btn{width:100%;padding:12px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;}
+.login-btn:hover{background:#e88a00;}
+.login-error{font-size:12px;color:var(--error);margin-top:10px;display:none;padding:8px 12px;background:var(--error-light);border-radius:4px;}
 
-/* SECTION */
-.section{margin-bottom:2rem;}
+/* ── PORTAL DASHBOARD ── */
+#portalSection{display:none;max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
+.portal-welcome{margin-bottom:2rem;}
+.portal-welcome h1{font-size:22px;font-weight:500;margin-bottom:4px;}
+.portal-welcome p{font-size:13px;color:var(--muted);}
+.portal-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:2rem;}
+.portal-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-align:center;}
+.portal-card:hover{border-color:var(--aws-orange);box-shadow:0 2px 12px rgba(255,153,0,0.12);}
+.portal-card-icon{width:48px;height:48px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.icon-csv{background:var(--success-light);}
+.icon-form{background:var(--aws-orange-light);}
+.portal-card h2{font-size:16px;font-weight:500;margin-bottom:6px;}
+.portal-card p{font-size:12px;color:var(--muted);line-height:1.6;}
+.portal-card .card-btn{margin-top:1.25rem;padding:9px 20px;border:1px solid var(--aws-orange);background:transparent;color:var(--aws-orange);border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:background 0.12s;}
+.portal-card:hover .card-btn{background:var(--aws-orange);color:var(--aws);}
+
+/* ── SECTION WRAPPER ── */
+#csvSection,#formSection{display:none;max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;font-family:'IBM Plex Sans',sans-serif;padding:0;}
+.back-btn:hover{color:var(--text);}
+
+/* ── CSV SECTION ── */
+.csv-header{margin-bottom:1.5rem;}
+.csv-header h2{font-size:18px;font-weight:500;margin-bottom:4px;}
+.csv-header p{font-size:13px;color:var(--muted);}
+.csv-template-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:4px;font-size:12px;color:var(--muted);cursor:pointer;background:var(--white);font-family:'IBM Plex Sans',sans-serif;margin-bottom:1.5rem;transition:border-color 0.12s;}
+.csv-template-btn:hover{border-color:var(--aws-orange);color:var(--aws-orange);}
+.drop-zone{border:2px dashed var(--border);border-radius:8px;padding:3rem;text-align:center;transition:border-color 0.15s,background 0.15s;cursor:pointer;background:var(--white);}
+.drop-zone.drag-over{border-color:var(--aws-orange);background:var(--aws-orange-light);}
+.drop-zone-icon{font-size:32px;margin-bottom:12px;}
+.drop-zone h3{font-size:15px;font-weight:500;margin-bottom:6px;}
+.drop-zone p{font-size:12px;color:var(--muted);}
+.drop-zone input[type=file]{display:none;}
+.drop-zone-btn{margin-top:14px;padding:9px 20px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+
+.csv-results{margin-top:1.5rem;display:none;}
+.csv-summary{display:flex;gap:12px;margin-bottom:1rem;flex-wrap:wrap;}
+.csv-stat{padding:10px 16px;border-radius:4px;font-size:12px;font-weight:500;}
+.csv-stat.total{background:var(--bg);color:var(--text);}
+.csv-stat.ok{background:var(--success-light);color:var(--success);}
+.csv-stat.err{background:var(--error-light);color:var(--error);}
+.csv-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;}
+.csv-table{width:100%;border-collapse:collapse;font-size:12px;}
+.csv-table th{background:var(--aws);color:rgba(255,255,255,0.8);padding:8px 12px;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap;}
+.csv-table td{padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.csv-table tr:last-child td{border-bottom:none;}
+.csv-table tr.row-ok td{background:var(--white);}
+.csv-table tr.row-err td{background:var(--error-light);}
+.row-status{font-size:10px;padding:2px 6px;border-radius:2px;font-weight:500;white-space:nowrap;}
+.row-status.ok{background:var(--success-light);color:var(--success);}
+.row-status.err{background:var(--error-light);color:var(--error);}
+.err-list{font-size:11px;color:var(--error);margin-top:3px;}
+.csv-submit-area{margin-top:1.5rem;display:flex;align-items:center;gap:12px;}
+.csv-submit-btn{padding:12px 28px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-size:14px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+.csv-submit-btn:disabled{background:var(--border);color:var(--muted);cursor:default;}
+.csv-note{font-size:12px;color:var(--muted);}
+
+/* ── FORM SECTION ── */
+.form-section-hdr{margin-bottom:1.5rem;}
+.form-section-hdr h2{font-size:18px;font-weight:500;margin-bottom:4px;}
+.form-section-hdr p{font-size:13px;color:var(--muted);}
+.section{margin-bottom:1.75rem;}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:8px;border-bottom:2px solid var(--aws);}
 .section-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;background:var(--aws);color:var(--aws-orange);padding:3px 8px;border-radius:2px;}
 .section-title{font-size:13px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--aws);}
 .section-desc{font-size:12px;color:var(--muted);margin-left:auto;}
-
-/* GRID */
 .field-grid{display:grid;gap:12px;}
 .field-grid.cols-2{grid-template-columns:1fr 1fr;}
 .field-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
-.field-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr;}
 .full{grid-column:1/-1;}
-
-/* FIELD */
 .field{display:flex;flex-direction:column;gap:5px;}
 .field-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;display:flex;align-items:center;gap:6px;}
 .req-star{color:var(--aws-orange);font-size:13px;line-height:1;}
 .cond-tag{font-size:9px;background:var(--conditional-light);color:var(--conditional);padding:1px 5px;border-radius:2px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;}
 .opt-tag{font-size:9px;background:var(--bg);color:var(--muted);padding:1px 5px;border-radius:2px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;border:1px solid var(--border);}
-
-.field input,.field select,.field textarea{
-  padding:9px 11px;
-  border:1px solid var(--border);
-  border-radius:4px;
-  font-family:'IBM Plex Sans',sans-serif;
-  font-size:13px;
-  background:var(--white);
-  color:var(--text);
-  outline:none;
-  transition:border-color 0.15s,background 0.15s;
-  width:100%;
-}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border-focus);background:var(--aws-orange-light);}
+.field input,.field select,.field textarea{padding:9px 11px;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;background:var(--white);color:var(--text);outline:none;transition:border-color 0.15s,background 0.15s;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--aws-orange);background:var(--aws-orange-light);}
 .field input.error,.field select.error,.field textarea.error{border-color:var(--error);background:var(--error-light);}
 .field input[readonly]{background:var(--bg);color:var(--muted);cursor:default;}
+.field input[disabled]{background:var(--bg);color:var(--border);cursor:not-allowed;}
 .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
 .field textarea{resize:vertical;min-height:70px;}
 .field-hint{font-size:11px;color:var(--muted);margin-top:2px;}
 .field-error{font-size:11px;color:var(--error);margin-top:2px;display:none;}
-
-/* CONDITIONAL FIELDS */
-.conditional-block{
-  border:1px solid var(--conditional);
-  border-radius:6px;
-  padding:14px;
-  background:var(--conditional-light);
-  display:none;
-  margin-top:4px;
-}
+.conditional-block{border:1px solid var(--conditional);border-radius:6px;padding:14px;background:var(--conditional-light);display:none;margin-top:8px;}
 .conditional-block.visible{display:block;}
 .conditional-label{font-size:10px;font-weight:500;color:var(--conditional);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 .conditional-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--conditional);}
-
-/* METRICS SECTION */
 .metrics-block{border:1px solid var(--border);border-radius:6px;overflow:hidden;}
 .metrics-header{background:var(--aws);color:var(--aws-orange);font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;padding:8px 14px;letter-spacing:0.06em;}
 .metrics-body{padding:14px;background:var(--white);}
 .metric-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
 .metric-row:last-child{margin-bottom:0;}
-.metric-field{position:relative;}
-.metric-field.disabled input{background:var(--bg);color:var(--border);cursor:not-allowed;}
-.metric-field.active input{background:var(--white);}
-.metric-badge{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;padding:1px 4px;border-radius:2px;font-weight:500;}
-.badge-email{background:#dbeafe;color:#1e40af;}
-.badge-display{background:#dcfce7;color:#166534;}
-.badge-linkedin{background:#e0e7ff;color:#3730a3;}
-.badge-all{background:#fef9c3;color:#854d0e;}
-
-/* SUBMIT */
+.badge-email{font-size:9px;background:#dbeafe;color:#1e40af;padding:1px 5px;border-radius:2px;font-weight:500;}
+.badge-display{font-size:9px;background:#dcfce7;color:#166534;padding:1px 5px;border-radius:2px;font-weight:500;}
+.badge-linkedin{font-size:9px;background:#e0e7ff;color:#3730a3;padding:1px 5px;border-radius:2px;font-weight:500;}
+.badge-all{font-size:9px;background:#fef9c3;color:#854d0e;padding:1px 5px;border-radius:2px;font-weight:500;}
 .submit-area{margin-top:2rem;display:flex;gap:12px;align-items:center;}
-.submit-btn{padding:13px 32px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s,transform 0.1s;letter-spacing:0.02em;}
+.submit-btn{padding:13px 32px;background:var(--aws-orange);color:var(--aws);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
 .submit-btn:hover{background:#e88a00;}
-.submit-btn:active{transform:scale(0.99);}
-.reset-btn{padding:13px 20px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;transition:background 0.12s;}
+.reset-btn{padding:13px 20px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;}
 .reset-btn:hover{background:var(--white);}
 .error-summary{font-size:13px;color:var(--error);display:none;}
 
-/* SUCCESS */
-#successSection{display:none;padding:3rem 0;}
+/* ── SUCCESS ── */
+#successSection{display:none;max-width:960px;margin:0 auto;padding:3rem 1.5rem;}
 .success-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:2.5rem;text-align:center;max-width:520px;margin:0 auto;}
 .success-icon{width:48px;height:48px;background:var(--success-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:22px;}
 .success-title{font-size:20px;font-weight:500;margin-bottom:8px;}
 .success-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+.save-status{font-size:12px;padding:8px 14px;border-radius:4px;margin-bottom:12px;}
+.save-status.saving{background:var(--bg);color:var(--muted);}
+.save-status.saved{background:var(--success-light);color:var(--success);}
+.save-status.failed{background:var(--error-light);color:var(--error);}
 .success-meta{background:var(--bg);border-radius:6px;padding:14px;text-align:left;font-size:12px;margin-bottom:1.5rem;}
 .success-meta-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);}
 .success-meta-row:last-child{border-bottom:none;}
 .success-meta-row span:first-child{color:var(--muted);}
 .success-meta-row span:last-child{font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;}
-.save-status{font-size:12px;padding:8px 14px;border-radius:4px;margin-bottom:12px;}
-.save-status.saving{background:var(--bg);color:var(--muted);}
-.save-status.saved{background:var(--success-light);color:var(--success);}
-.save-status.failed{background:var(--error-light);color:var(--error);}
 .new-btn{padding:11px 24px;background:var(--aws);color:var(--white);border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;}
 
 @media(max-width:600px){
-  .field-grid.cols-2,.field-grid.cols-3,.field-grid.cols-4{grid-template-columns:1fr;}
+  .portal-cards{grid-template-columns:1fr;}
+  .field-grid.cols-2,.field-grid.cols-3{grid-template-columns:1fr;}
   .metric-row{grid-template-columns:1fr 1fr;}
 }
 </style>
@@ -146,19 +174,95 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div class="header">
   <div class="header-inner">
     <div class="header-logo">AWS Marketplace</div>
-    <div class="header-title">Campaign Data Entry — Vendor Form</div>
+    <div class="header-title">Vendor Portal</div>
+    <span class="header-user" id="headerUser"></span>
+    <button class="header-logout" id="logoutBtn" onclick="logout()">Sign out</button>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 </div>
 
-<div class="container" id="formSection">
-
-  <!-- SECTION 1: CAMPAIGN INFO -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <span class="section-title">Campaign Information</span>
+<!-- ── LOGIN ────────────────────────────────────────────────────────────── -->
+<div id="loginSection">
+  <div class="login-card">
+    <div class="login-logo">AWS Marketplace</div>
+    <div class="login-title">Vendor sign in</div>
+    <div class="login-sub">Enter your credentials to access the campaign portal</div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Your vendor username" autocomplete="username"/>
     </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-error" id="loginError">Incorrect username or password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ── PORTAL DASHBOARD ──────────────────────────────────────────────────── -->
+<div id="portalSection">
+  <div class="portal-welcome">
+    <h1 id="welcomeMsg">Welcome</h1>
+    <p>Choose how you'd like to submit your campaign data.</p>
+  </div>
+  <div class="portal-cards">
+    <div class="portal-card" onclick="showCSV()">
+      <div class="portal-card-icon icon-csv">📄</div>
+      <h2>Upload CSV</h2>
+      <p>Have your data ready in a spreadsheet? Upload a CSV file and we'll validate it before submission. Download the template to get started.</p>
+      <button class="card-btn">Upload CSV file</button>
+    </div>
+    <div class="portal-card" onclick="showForm()">
+      <div class="portal-card-icon icon-form">✏️</div>
+      <h2>Manual Entry</h2>
+      <p>Fill in campaign details one at a time using our guided form. Required fields and conditional logic are handled automatically.</p>
+      <button class="card-btn">Fill out form</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CSV SECTION ───────────────────────────────────────────────────────── -->
+<div id="csvSection">
+  <button class="back-btn" onclick="showPortal()">← Back to portal</button>
+  <div class="csv-header">
+    <h2>Upload Campaign CSV</h2>
+    <p>Your file must match the required column format. Download the template below to get started.</p>
+  </div>
+  <button class="csv-template-btn" onclick="downloadTemplate()">⬇ Download CSV template</button>
+  <div class="drop-zone" id="dropZone" onclick="document.getElementById('csvFileInput').click()"
+    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+    <div class="drop-zone-icon">📂</div>
+    <h3>Drop your CSV file here</h3>
+    <p>or click to browse</p>
+    <input type="file" id="csvFileInput" accept=".csv" onchange="handleFileSelect(event)"/>
+    <button class="drop-zone-btn" onclick="event.stopPropagation();document.getElementById('csvFileInput').click()">Browse files</button>
+  </div>
+
+  <div class="csv-results" id="csvResults">
+    <div class="csv-summary" id="csvSummary"></div>
+    <div class="csv-table-wrap">
+      <table class="csv-table" id="csvTable">
+        <thead id="csvTableHead"></thead>
+        <tbody id="csvTableBody"></tbody>
+      </table>
+    </div>
+    <div class="csv-submit-area">
+      <button class="csv-submit-btn" id="csvSubmitBtn" onclick="submitCSV()">Submit valid rows</button>
+      <span class="csv-note" id="csvSubmitNote"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ── FORM SECTION ──────────────────────────────────────────────────────── -->
+<div id="formSection">
+  <button class="back-btn" onclick="showPortal()">← Back to portal</button>
+  <div class="form-section-hdr">
+    <h2>Manual Campaign Entry</h2>
+    <p>All fields marked <span style="color:var(--aws-orange)">*</span> are required.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><span class="section-title">Campaign Information</span></div>
     <div class="field-grid cols-2">
       <div class="field">
         <label class="field-label"><span class="req-star">*</span> Campaign Type</label>
@@ -173,7 +277,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
         <label class="field-label"><span class="req-star">*</span> Tactic Type</label>
         <select id="tacticType" onchange="onTacticTypeChange()">
           <option value="">— Select —</option>
-          <!-- MOCK — replace with real list -->
           <option value="Dedicated Email">Dedicated Email</option>
           <option value="Newsletter">Newsletter</option>
           <option value="Display">Display</option>
@@ -182,8 +285,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
         <div class="field-error" id="err-tacticType">Tactic type is required</div>
       </div>
     </div>
-
-    <!-- CONDITIONAL: Thematic fields -->
     <div class="conditional-block" id="thematicBlock">
       <div class="conditional-label">Required for Thematic campaigns</div>
       <div class="field-grid cols-2">
@@ -191,7 +292,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
           <label class="field-label"><span class="req-star">*</span> Campaign Theme <span class="cond-tag">Thematic only</span></label>
           <select id="campaignTheme" onchange="onThemeChange()">
             <option value="">— Select —</option>
-            <!-- MOCK — replace with real themes -->
             <option value="Data & AI">Data & AI</option>
             <option value="Security">Security</option>
             <option value="BizApps">BizApps</option>
@@ -205,7 +305,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
           <label class="field-label"><span class="req-star">*</span> Campaign Sub-theme <span class="cond-tag">BizApps / Industry</span></label>
           <select id="campaignSubtheme">
             <option value="">— Select —</option>
-            <!-- MOCK — replace with real sub-themes -->
             <option value="Financial Services">Financial Services</option>
             <option value="Healthcare">Healthcare</option>
             <option value="Retail">Retail</option>
@@ -220,19 +319,12 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-  <!-- SECTION 2: VENDOR & PUBLICATION -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Vendor & Publication</span>
-    </div>
+    <div class="section-header"><span class="section-num">02</span><span class="section-title">Vendor & Publication</span></div>
     <div class="field-grid cols-2">
       <div class="field">
         <label class="field-label"><span class="req-star">*</span> Vendor Name</label>
-        <select id="vendorName" onchange="onVendorChange()">
-          <option value="">— Select vendor —</option>
-        </select>
-        <div class="field-error" id="err-vendorName">Vendor name is required</div>
+        <input type="text" id="vendorName" readonly/>
       </div>
       <div class="field">
         <label class="field-label"><span class="req-star">*</span> Publication Name</label>
@@ -243,13 +335,12 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       </div>
       <div class="field">
         <label class="field-label">Publication ID</label>
-        <input type="text" id="publicationId" readonly placeholder="Auto-filled from publication"/>
+        <input type="text" id="publicationId" readonly placeholder="Auto-filled"/>
       </div>
       <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Promotion Name <span class="cond-tag">Controlled list</span></label>
+        <label class="field-label"><span class="req-star">*</span> Promotion Name</label>
         <select id="promotionName" onchange="onPromotionChange()">
-          <option value="">— Select promotion —</option>
-          <!-- MOCK — replace with real promotions -->
+          <option value="">— Select —</option>
           <option value="D/AI FEB">D/AI FEB</option>
           <option value="Security MAR">Security MAR</option>
           <option value="BizApps APR">BizApps APR</option>
@@ -268,98 +359,79 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     </div>
   </div>
 
-  <!-- SECTION 3: TRACKING -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <span class="section-title">Tracking</span>
-    </div>
+    <div class="section-header"><span class="section-num">03</span><span class="section-title">Tracking</span></div>
     <div class="field-grid cols-2">
       <div class="field">
         <label class="field-label"><span class="req-star">*</span> TRK Code</label>
         <input type="text" id="trk" placeholder="e.g. trk_example_001"/>
-        <div class="field-hint">Provided by vendor</div>
         <div class="field-error" id="err-trk">TRK code is required</div>
       </div>
       <div class="field">
         <label class="field-label"><span class="req-star">*</span> CTA URL</label>
         <input type="url" id="ctaUrl" placeholder="https://aws.amazon.com/..."/>
-        <div class="field-hint">Provided by vendor</div>
         <div class="field-error" id="err-ctaUrl">CTA URL is required</div>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 4: PERFORMANCE METRICS -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <span class="section-title">Performance Metrics</span>
-      <span class="section-desc">Fields activate based on tactic type</span>
-    </div>
+    <div class="section-header"><span class="section-num">04</span><span class="section-title">Performance Metrics</span><span class="section-desc">Fields activate based on tactic type</span></div>
     <div class="metrics-block">
       <div class="metrics-header">DELIVERY & ENGAGEMENT METRICS</div>
       <div class="metrics-body">
-
         <div class="metric-row">
-          <div class="field metric-field" id="mf-deliveredSends">
-            <label class="field-label">Delivered Sends <span class="badge-email metric-badge">Email</span></label>
+          <div class="field">
+            <label class="field-label">Delivered Sends <span class="badge-email">Email</span></label>
             <input type="number" id="deliveredSends" placeholder="—" min="0" disabled/>
             <div class="field-hint">Email / Newsletter only</div>
           </div>
-          <div class="field metric-field" id="mf-opens">
-            <label class="field-label">Opens <span class="badge-email metric-badge">Email</span></label>
+          <div class="field">
+            <label class="field-label">Opens <span class="badge-email">Email</span></label>
             <input type="number" id="opens" placeholder="—" min="0" disabled/>
             <div class="field-hint">Email / Newsletter only</div>
           </div>
-          <div class="field metric-field" id="mf-impressions">
-            <label class="field-label">Impressions <span class="badge-display metric-badge">Display</span></label>
+          <div class="field">
+            <label class="field-label">Impressions <span class="badge-display">Display</span></label>
             <input type="number" id="impressions" placeholder="—" min="0" disabled/>
             <div class="field-hint">Display / LinkedIn only</div>
           </div>
         </div>
-
         <div class="metric-row">
-          <div class="field metric-field" id="mf-linkedinLikes">
-            <label class="field-label">LinkedIn Likes <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+          <div class="field">
+            <label class="field-label">LinkedIn Likes <span class="badge-linkedin">LinkedIn</span></label>
             <input type="number" id="linkedinLikes" placeholder="—" min="0" disabled/>
           </div>
-          <div class="field metric-field" id="mf-linkedinComments">
-            <label class="field-label">LinkedIn Comments <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+          <div class="field">
+            <label class="field-label">LinkedIn Comments <span class="badge-linkedin">LinkedIn</span></label>
             <input type="number" id="linkedinComments" placeholder="—" min="0" disabled/>
           </div>
-          <div class="field metric-field" id="mf-linkedinViews">
-            <label class="field-label">LinkedIn Views <span class="badge-linkedin metric-badge">LinkedIn</span></label>
+          <div class="field">
+            <label class="field-label">LinkedIn Views <span class="badge-linkedin">LinkedIn</span></label>
             <input type="number" id="linkedinViews" placeholder="—" min="0" disabled/>
           </div>
         </div>
-
         <div class="metric-row">
-          <div class="field metric-field" id="mf-clicks">
-            <label class="field-label"><span class="req-star">*</span> Clicks <span class="badge-all metric-badge">All</span></label>
+          <div class="field">
+            <label class="field-label"><span class="req-star">*</span> Clicks <span class="badge-all">All</span></label>
             <input type="number" id="clicks" placeholder="Whole number" min="0"/>
-            <div class="field-error" id="err-clicks">Clicks is required (whole number)</div>
+            <div class="field-error" id="err-clicks">Clicks is required</div>
           </div>
-          <div class="field metric-field" id="mf-uniqueClicks">
+          <div class="field">
             <label class="field-label">Unique Clicks <span class="opt-tag">Optional</span></label>
             <input type="number" id="uniqueClicks" placeholder="Whole number" min="0"/>
           </div>
           <div class="field"></div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- SECTION 5: NOTES -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <span class="section-title">Notes</span>
-    </div>
+    <div class="section-header"><span class="section-num">05</span><span class="section-title">Notes</span></div>
     <div class="field">
       <label class="field-label">Notes <span class="opt-tag">Optional</span></label>
-      <textarea id="notes" placeholder="Any additional context or comments..." maxlength="500"></textarea>
+      <textarea id="notes" placeholder="Any additional context..." maxlength="500"></textarea>
       <div class="field-hint"><span id="notesCount">0</span>/500 characters</div>
     </div>
   </div>
@@ -369,26 +441,25 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <button class="reset-btn" onclick="resetForm()">Reset</button>
     <span class="error-summary" id="errorSummary">Please fix the errors above before submitting.</span>
   </div>
-
 </div>
 
-<!-- SUCCESS -->
-<div class="container" id="successSection">
+<!-- ── SUCCESS ───────────────────────────────────────────────────────────── -->
+<div id="successSection">
   <div class="success-card">
     <div class="success-icon">✓</div>
     <div class="success-title">Submission received</div>
-    <div class="success-sub">Campaign data has been recorded successfully.</div>
+    <div class="success-sub">Your campaign data has been recorded successfully.</div>
     <div class="save-status saving" id="saveStatus">Saving to Google Sheets...</div>
     <div class="success-meta" id="successMeta"></div>
-    <button class="new-btn" onclick="resetForm()">Submit another entry</button>
+    <button class="new-btn" onclick="showPortal()">Back to portal</button>
   </div>
 </div>
 
 <script>
-// ── REPLACE WITH YOUR GOOGLE APPS SCRIPT URL ──────────────────────────────
+// ── CONFIG ────────────────────────────────────────────────────────────────
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPIoXm4zVaM0fQqgRylD5H9JuWu6y36sbalN4EHbsw4WJoO6ywXy5SHz2ZKRajmcP3/exec";
 
-// ── PUBLICATION DATA ───────────────────────────────────────────────────────
+// ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
   {id:"PUB0001",vendor:"Future",name:"AdvaMed"},
   {id:"PUB0002",vendor:"Future",name:"AHIMA (SmartBrief)"},
@@ -555,33 +626,280 @@ const publications = [
   {id:"PUB0163",vendor:"VMBlog",name:"VMBlog"}
 ];
 
-// Promotion month mapping (MOCK — replace with real data)
 const promotionMonths = {
   "D/AI FEB":"February","Security MAR":"March","BizApps APR":"April",
   "Industry MAY":"May","Infrastructure JUN":"June","Migration JUL":"July",
   "Data & AI AUG":"August","Security SEP":"September"
 };
 
-// ── INIT ───────────────────────────────────────────────────────────────────
-function init() {
-  // Populate vendor dropdown (unique sorted vendors)
-  const vendors = [...new Set(publications.map(p => p.vendor))].sort();
-  const vendorSel = document.getElementById('vendorName');
-  vendors.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v; opt.textContent = v;
-    vendorSel.appendChild(opt);
-  });
+const CSV_COLUMNS = [
+  "Campaign Type","Vendor Name","Publication ID","Publication Name",
+  "Promotion Name","Promotion Month","Campaign Theme","Campaign Sub-theme",
+  "Tactic Type","TRK","CTA URL","Delivered Sends","Opens","Impressions",
+  "LinkedIn Likes","LinkedIn Comments","LinkedIn Views","Clicks","Unique Clicks","Notes"
+];
 
-  // Notes counter
-  document.getElementById('notes').addEventListener('input', function() {
-    document.getElementById('notesCount').textContent = this.value.length;
-  });
+let currentVendor = null;
+let csvRows = [];
 
-  updateProgress();
+// ── LOGIN ──────────────────────────────────────────────────────────────────
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value.trim();
+  if (!username || !password) {
+    document.getElementById('loginError').textContent = 'Please enter your username and password.';
+    document.getElementById('loginError').style.display = 'block';
+    return;
+  }
+  const btn = document.querySelector('.login-btn');
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'login', username, password })
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.textContent = 'Sign in';
+    btn.disabled = false;
+    if (data.status === 'success') {
+      currentVendor = data.vendorName;
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('headerUser').textContent = data.vendorName;
+      document.getElementById('headerUser').style.display = 'block';
+      document.getElementById('logoutBtn').style.display = 'block';
+      document.getElementById('loginSection').style.display = 'none';
+      showPortal();
+    } else if (data.status === 'invalid') {
+      document.getElementById('loginError').textContent = 'Incorrect username or password. Please try again.';
+      document.getElementById('loginError').style.display = 'block';
+    } else {
+      document.getElementById('loginError').textContent = 'Login error: ' + (data.message || 'Please try again.');
+      document.getElementById('loginError').style.display = 'block';
+    }
+  })
+  .catch(() => {
+    btn.textContent = 'Sign in';
+    btn.disabled = false;
+    document.getElementById('loginError').textContent = 'Could not connect. Please check your connection and try again.';
+    document.getElementById('loginError').style.display = 'block';
+  });
 }
 
-// ── CAMPAIGN TYPE CHANGE ───────────────────────────────────────────────────
+function logout() {
+  currentVendor = null;
+  document.getElementById('headerUser').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  hideAll();
+  document.getElementById('loginSection').style.display = 'flex';
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+function hideAll() {
+  ['portalSection','csvSection','formSection','successSection'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function showPortal() {
+  hideAll();
+  document.getElementById('welcomeMsg').textContent = 'Welcome, ' + currentVendor;
+  document.getElementById('portalSection').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showCSV() {
+  hideAll();
+  document.getElementById('csvSection').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showForm() {
+  hideAll();
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('vendorName').value = currentVendor;
+  populatePublications(currentVendor);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── CSV TEMPLATE ───────────────────────────────────────────────────────────
+function downloadTemplate() {
+  const header = CSV_COLUMNS.join(',');
+  const example = [
+    'AWS Marketplace',currentVendor,'','','','','','',
+    'Newsletter','trk_example_001','https://aws.example.com',
+    '','','','','','','1000','900',''
+  ].join(',');
+  const blob = new Blob([header+'\n'+example], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'aws_campaign_template.csv';
+  a.click();
+}
+
+// ── CSV DRAG & DROP ────────────────────────────────────────────────────────
+function onDragOver(e) {e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');}
+function onDragLeave(e) {document.getElementById('dropZone').classList.remove('drag-over');}
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) processCSV(file);
+}
+function handleFileSelect(e) {if(e.target.files[0]) processCSV(e.target.files[0]);}
+
+function processCSV(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) return alert('File appears empty.');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+
+    // Check columns
+    const missing = CSV_COLUMNS.filter(c => !headers.includes(c));
+    if (missing.length > 0) {
+      alert('Missing columns: ' + missing.join(', ') + '\n\nPlease use the template.');
+      return;
+    }
+
+    csvRows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const vals = parseCSVLine(lines[i]);
+      const row = {};
+      headers.forEach((h,idx) => row[h] = (vals[idx]||'').trim());
+      const errors = validateCSVRow(row);
+      csvRows.push({row, errors, valid: errors.length === 0});
+    }
+
+    renderCSVResults();
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQuotes = !inQuotes; }
+    else if (line[i] === ',' && !inQuotes) { result.push(cur); cur = ''; }
+    else cur += line[i];
+  }
+  result.push(cur);
+  return result;
+}
+
+function validateCSVRow(row) {
+  const errors = [];
+  if (!row['Campaign Type']) errors.push('Campaign Type is required');
+  else if (!['AWS Marketplace','AWS Marketplace - Thematic'].includes(row['Campaign Type']))
+    errors.push('Campaign Type must be "AWS Marketplace" or "AWS Marketplace - Thematic"');
+  if (!row['Tactic Type']) errors.push('Tactic Type is required');
+  else if (!['Dedicated Email','Newsletter','Display','LinkedIn Group Post'].includes(row['Tactic Type']))
+    errors.push('Invalid Tactic Type');
+  if (!row['Publication Name']) errors.push('Publication Name is required');
+  if (!row['Promotion Name']) errors.push('Promotion Name is required');
+  if (!row['TRK']) errors.push('TRK is required');
+  if (!row['CTA URL']) errors.push('CTA URL is required');
+  if (!row['Clicks']) errors.push('Clicks is required');
+  else if (isNaN(parseInt(row['Clicks']))) errors.push('Clicks must be a whole number');
+  if (row['Campaign Type'] === 'AWS Marketplace - Thematic' && !row['Campaign Theme'])
+    errors.push('Campaign Theme required for Thematic');
+  return errors;
+}
+
+function renderCSVResults() {
+  const total = csvRows.length;
+  const valid = csvRows.filter(r => r.valid).length;
+  const errs  = total - valid;
+
+  document.getElementById('csvSummary').innerHTML =
+    `<div class="csv-stat total">${total} rows total</div>` +
+    `<div class="csv-stat ok">${valid} valid</div>` +
+    (errs > 0 ? `<div class="csv-stat err">${errs} with errors</div>` : '');
+
+  const thead = document.getElementById('csvTableHead');
+  const tbody = document.getElementById('csvTableBody');
+  thead.innerHTML = '<tr><th>Row</th><th>Status</th><th>Campaign Type</th><th>Publication</th><th>Tactic</th><th>TRK</th><th>Clicks</th><th>Issues</th></tr>';
+  tbody.innerHTML = csvRows.map((r,i) =>
+    `<tr class="${r.valid?'row-ok':'row-err'}">
+      <td>${i+1}</td>
+      <td><span class="row-status ${r.valid?'ok':'err'}">${r.valid?'Valid':'Error'}</span></td>
+      <td>${r.row['Campaign Type']||'—'}</td>
+      <td>${r.row['Publication Name']||'—'}</td>
+      <td>${r.row['Tactic Type']||'—'}</td>
+      <td>${r.row['TRK']||'—'}</td>
+      <td>${r.row['Clicks']||'—'}</td>
+      <td>${r.errors.length?'<div class="err-list">'+r.errors.join('<br>')+'</div>':'—'}</td>
+    </tr>`
+  ).join('');
+
+  const btn = document.getElementById('csvSubmitBtn');
+  const note = document.getElementById('csvSubmitNote');
+  btn.disabled = valid === 0;
+  note.textContent = valid > 0
+    ? `${valid} valid row${valid>1?'s':''} will be submitted.${errs>0?' '+errs+' row(s) with errors will be skipped.':''}`
+    : 'No valid rows to submit.';
+
+  document.getElementById('csvResults').style.display = 'block';
+}
+
+function submitCSV() {
+  const validRows = csvRows.filter(r => r.valid).map(r => ({...r.row, vendorName: currentVendor}));
+  hideAll();
+  document.getElementById('successSection').style.display = 'block';
+  document.getElementById('successMeta').innerHTML = [
+    ['Vendor', currentVendor],
+    ['Rows submitted', validRows.length],
+    ['Submission type', 'CSV Upload']
+  ].map(([k,v]) => `<div class="success-meta-row"><span>${k}</span><span>${v}</span></div>`).join('');
+
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.className = 'save-status saving';
+  saveStatus.textContent = `Saving ${validRows.length} rows to Google Sheets...`;
+
+  Promise.all(validRows.map(row =>
+    fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({...row, action:'save'})})
+  )).then(() => {
+    saveStatus.className = 'save-status saved';
+    saveStatus.textContent = `✓ ${validRows.length} rows saved to Google Sheets`;
+  }).catch(() => {
+    saveStatus.className = 'save-status failed';
+    saveStatus.textContent = 'Could not save — please contact your administrator.';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── FORM LOGIC ─────────────────────────────────────────────────────────────
+function populatePublications(vendor) {
+  const sel = document.getElementById('publicationName');
+  sel.innerHTML = '<option value="">— Select publication —</option>';
+  document.getElementById('publicationId').value = '';
+  const pubs = publications.filter(p => p.vendor === vendor).sort((a,b) => a.name.localeCompare(b.name));
+  pubs.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.name; opt.dataset.id = p.id; opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+  if (pubs.length === 1) {
+    sel.value = pubs[0].name;
+    document.getElementById('publicationId').value = pubs[0].id;
+  }
+}
+
+function onPublicationChange() {
+  const sel = document.getElementById('publicationName');
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('publicationId').value = opt ? (opt.dataset.id||'') : '';
+}
+
+function onPromotionChange() {
+  const promo = document.getElementById('promotionName').value;
+  document.getElementById('promotionMonth').value = promotionMonths[promo]||'';
+}
+
 function onCampaignTypeChange() {
   const val = document.getElementById('campaignType').value;
   const block = document.getElementById('thematicBlock');
@@ -591,218 +909,124 @@ function onCampaignTypeChange() {
     document.getElementById('campaignSubtheme').value = '';
     document.getElementById('subthemeField').style.display = 'none';
   }
-  updateProgress();
 }
 
-// ── THEME CHANGE ───────────────────────────────────────────────────────────
 function onThemeChange() {
   const theme = document.getElementById('campaignTheme').value;
-  const subField = document.getElementById('subthemeField');
-  const needsSub = theme === 'BizApps' || theme === 'Industry';
-  subField.style.display = needsSub ? 'block' : 'none';
-  if (!needsSub) document.getElementById('campaignSubtheme').value = '';
-  updateProgress();
+  const sub = document.getElementById('subthemeField');
+  const needs = theme==='BizApps'||theme==='Industry';
+  sub.style.display = needs ? 'block' : 'none';
+  if (!needs) document.getElementById('campaignSubtheme').value = '';
 }
 
-// ── VENDOR CHANGE ──────────────────────────────────────────────────────────
-function onVendorChange() {
-  const vendor = document.getElementById('vendorName').value;
-  const pubSel = document.getElementById('publicationName');
-  pubSel.innerHTML = '<option value="">— Select publication —</option>';
-  document.getElementById('publicationId').value = '';
-
-  if (vendor) {
-    const pubs = publications.filter(p => p.vendor === vendor).sort((a,b) => a.name.localeCompare(b.name));
-    pubs.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.name; opt.dataset.id = p.id; opt.textContent = p.name;
-      pubSel.appendChild(opt);
-    });
-    if (pubs.length === 1) {
-      pubSel.value = pubs[0].name;
-      document.getElementById('publicationId').value = pubs[0].id;
-    }
-  }
-  updateProgress();
-}
-
-// ── PUBLICATION CHANGE ─────────────────────────────────────────────────────
-function onPublicationChange() {
-  const pubSel = document.getElementById('publicationName');
-  const selected = pubSel.options[pubSel.selectedIndex];
-  document.getElementById('publicationId').value = selected ? (selected.dataset.id || '') : '';
-  updateProgress();
-}
-
-// ── PROMOTION CHANGE ───────────────────────────────────────────────────────
-function onPromotionChange() {
-  const promo = document.getElementById('promotionName').value;
-  document.getElementById('promotionMonth').value = promotionMonths[promo] || '';
-  updateProgress();
-}
-
-// ── TACTIC TYPE CHANGE ─────────────────────────────────────────────────────
 function onTacticTypeChange() {
-  const tactic = document.getElementById('tacticType').value;
-  const isEmail = tactic === 'Dedicated Email' || tactic === 'Newsletter';
-  const isDisplay = tactic === 'Display';
-  const isLinkedIn = tactic === 'LinkedIn Group Post';
-
+  const t = document.getElementById('tacticType').value;
+  const isEmail = t==='Dedicated Email'||t==='Newsletter';
+  const isDisplay = t==='Display';
+  const isLI = t==='LinkedIn Group Post';
   setMetric('deliveredSends', isEmail);
   setMetric('opens', isEmail);
-  setMetric('impressions', isDisplay || isLinkedIn);
-  setMetric('linkedinLikes', isLinkedIn);
-  setMetric('linkedinComments', isLinkedIn);
-  setMetric('linkedinViews', isLinkedIn);
-  updateProgress();
+  setMetric('impressions', isDisplay||isLI);
+  setMetric('linkedinLikes', isLI);
+  setMetric('linkedinComments', isLI);
+  setMetric('linkedinViews', isLI);
 }
 
 function setMetric(id, active) {
-  const input = document.getElementById(id);
-  const wrap = document.getElementById('mf-' + id);
-  input.disabled = !active;
-  input.value = active ? (input.value || '') : '';
-  if (wrap) wrap.classList.toggle('active', active);
-  if (wrap) wrap.classList.toggle('disabled', !active);
+  const el = document.getElementById(id);
+  el.disabled = !active;
+  if (!active) el.value = '';
 }
 
-// ── PROGRESS ───────────────────────────────────────────────────────────────
-function updateProgress() {
-  const fields = ['campaignType','tacticType','vendorName','publicationName','promotionName','trk','ctaUrl','clicks'];
-  const filled = fields.filter(f => document.getElementById(f).value.trim() !== '').length;
-  document.getElementById('progressFill').style.width = (filled / fields.length * 100) + '%';
-}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('notes').addEventListener('input', function() {
+    document.getElementById('notesCount').textContent = this.value.length;
+  });
+});
 
-document.addEventListener('input', updateProgress);
-
-// ── VALIDATION ─────────────────────────────────────────────────────────────
-function validate() {
+function validateForm() {
   let valid = true;
-
-  function check(id, condition) {
+  function check(id, required) {
     const el = document.getElementById(id);
-    const err = document.getElementById('err-' + id);
-    const fail = condition ? !el.value.trim() : false;
+    const err = document.getElementById('err-'+id);
+    const fail = required && !el.value.trim();
     el.classList.toggle('error', fail);
     if (err) err.style.display = fail ? 'block' : 'none';
     if (fail) valid = false;
   }
-
-  check('campaignType', true);
-  check('tacticType', true);
-  check('vendorName', true);
-  check('publicationName', true);
-  check('promotionName', true);
-  check('trk', true);
-  check('ctaUrl', true);
-  check('clicks', true);
-
+  check('campaignType',true); check('tacticType',true);
+  check('publicationName',true); check('promotionName',true);
+  check('trk',true); check('ctaUrl',true); check('clicks',true);
   const isThematic = document.getElementById('campaignType').value === 'AWS Marketplace - Thematic';
   check('campaignTheme', isThematic);
-
   const theme = document.getElementById('campaignTheme').value;
-  const needsSub = isThematic && (theme === 'BizApps' || theme === 'Industry');
-  check('campaignSubtheme', needsSub);
-
+  check('campaignSubtheme', isThematic && (theme==='BizApps'||theme==='Industry'));
   return valid;
 }
 
-// ── SUBMIT ─────────────────────────────────────────────────────────────────
 function submitForm() {
-  if (!validate()) {
+  if (!validateForm()) {
     document.getElementById('errorSummary').style.display = 'inline';
-    document.querySelector('.submit-btn').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
-
   const payload = {
-    campaignType:      document.getElementById('campaignType').value,
-    tacticType:        document.getElementById('tacticType').value,
-    campaignTheme:     document.getElementById('campaignTheme').value,
-    campaignSubtheme:  document.getElementById('campaignSubtheme').value,
-    vendorName:        document.getElementById('vendorName').value,
-    publicationId:     document.getElementById('publicationId').value,
-    publicationName:   document.getElementById('publicationName').value,
-    promotionName:     document.getElementById('promotionName').value,
-    promotionMonth:    document.getElementById('promotionMonth').value,
-    trk:               document.getElementById('trk').value,
-    ctaUrl:            document.getElementById('ctaUrl').value,
-    deliveredSends:    document.getElementById('deliveredSends').value,
-    opens:             document.getElementById('opens').value,
-    impressions:       document.getElementById('impressions').value,
-    linkedinLikes:     document.getElementById('linkedinLikes').value,
-    linkedinComments:  document.getElementById('linkedinComments').value,
-    linkedinViews:     document.getElementById('linkedinViews').value,
-    clicks:            document.getElementById('clicks').value,
-    uniqueClicks:      document.getElementById('uniqueClicks').value,
-    notes:             document.getElementById('notes').value
+    campaignType:     document.getElementById('campaignType').value,
+    tacticType:       document.getElementById('tacticType').value,
+    campaignTheme:    document.getElementById('campaignTheme').value,
+    campaignSubtheme: document.getElementById('campaignSubtheme').value,
+    vendorName:       currentVendor,
+    publicationId:    document.getElementById('publicationId').value,
+    publicationName:  document.getElementById('publicationName').value,
+    promotionName:    document.getElementById('promotionName').value,
+    promotionMonth:   document.getElementById('promotionMonth').value,
+    trk:              document.getElementById('trk').value,
+    ctaUrl:           document.getElementById('ctaUrl').value,
+    deliveredSends:   document.getElementById('deliveredSends').value,
+    opens:            document.getElementById('opens').value,
+    impressions:      document.getElementById('impressions').value,
+    linkedinLikes:    document.getElementById('linkedinLikes').value,
+    linkedinComments: document.getElementById('linkedinComments').value,
+    linkedinViews:    document.getElementById('linkedinViews').value,
+    clicks:           document.getElementById('clicks').value,
+    uniqueClicks:     document.getElementById('uniqueClicks').value,
+    notes:            document.getElementById('notes').value
   };
-
-  // Show success screen
-  document.getElementById('formSection').style.display = 'none';
+  hideAll();
   document.getElementById('successSection').style.display = 'block';
-  window.scrollTo({top:0,behavior:'smooth'});
-
-  // Populate success summary
   document.getElementById('successMeta').innerHTML = [
-    ['Campaign Type', payload.campaignType],
-    ['Vendor', payload.vendorName],
+    ['Vendor', currentVendor],
     ['Publication', payload.publicationName],
-    ['Publication ID', payload.publicationId],
-    ['Promotion', payload.promotionName],
+    ['Campaign Type', payload.campaignType],
     ['Tactic Type', payload.tacticType],
     ['Clicks', payload.clicks]
-  ].map(([k,v]) => `<div class="success-meta-row"><span>${k}</span><span>${v||'—'}</span></div>`).join('');
+  ].map(([k,v])=>`<div class="success-meta-row"><span>${k}</span><span>${v||'—'}</span></div>`).join('');
 
-  // Save to Google Sheets
   const saveStatus = document.getElementById('saveStatus');
   saveStatus.className = 'save-status saving';
   saveStatus.textContent = 'Saving to Google Sheets...';
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify(payload)
-  })
-  .then(() => {
-    saveStatus.className = 'save-status saved';
-    saveStatus.textContent = '✓ Saved to Google Sheets';
-  })
-  .catch(() => {
-    saveStatus.className = 'save-status failed';
-    saveStatus.textContent = 'Could not save — please contact your administrator.';
-  });
-}
-
-// ── RESET ──────────────────────────────────────────────────────────────────
-function resetForm() {
-  document.querySelectorAll('input:not([readonly]), select, textarea').forEach(el => el.value = '');
-  document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-  document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
-  document.getElementById('thematicBlock').classList.remove('visible');
-  document.getElementById('subthemeField').style.display = 'none';
-  document.getElementById('publicationId').value = '';
-  document.getElementById('promotionMonth').value = '';
-  document.getElementById('notesCount').textContent = '0';
-  document.getElementById('errorSummary').style.display = 'none';
-  ['deliveredSends','opens','impressions','linkedinLikes','linkedinComments','linkedinViews'].forEach(id => setMetric(id, false));
-  document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('formSection').style.display = 'block';
-  document.getElementById('successSection').style.display = 'none';
+  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({...payload, action:'save'})})
+  .then(()=>{saveStatus.className='save-status saved';saveStatus.textContent='✓ Saved to Google Sheets';})
+  .catch(()=>{saveStatus.className='save-status failed';saveStatus.textContent='Could not save — please contact your administrator.';});
   window.scrollTo({top:0,behavior:'smooth'});
-
-  // Re-populate vendor dropdown
-  const vendorSel = document.getElementById('vendorName');
-  vendorSel.innerHTML = '<option value="">— Select vendor —</option>';
-  const vendors = [...new Set(publications.map(p => p.vendor))].sort();
-  vendors.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v; opt.textContent = v;
-    vendorSel.appendChild(opt);
-  });
 }
 
-init();
+function resetForm() {
+  document.querySelectorAll('#formSection input:not([readonly]), #formSection select, #formSection textarea')
+    .forEach(el => el.value='');
+  document.querySelectorAll('.error').forEach(el=>el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el=>el.style.display='none');
+  document.getElementById('thematicBlock').classList.remove('visible');
+  document.getElementById('subthemeField').style.display='none';
+  document.getElementById('publicationId').value='';
+  document.getElementById('promotionMonth').value='';
+  document.getElementById('notesCount').textContent='0';
+  document.getElementById('errorSummary').style.display='none';
+  document.getElementById('vendorName').value = currentVendor;
+  populatePublications(currentVendor);
+  ['deliveredSends','opens','impressions','linkedinLikes','linkedinComments','linkedinViews']
+    .forEach(id=>setMetric(id,false));
+}
 </script>
 </body>
 </html>
