@@ -457,7 +457,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPIoXm4zVaM0fQqgRylD5H9JuWu6y36sbalN4EHbsw4WJoO6ywXy5SHz2ZKRajmcP3/exec";
 
 // ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
@@ -655,11 +655,8 @@ function doLogin() {
   btn.textContent = 'Signing in...';
   btn.disabled = true;
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({ action: 'login', username, password })
-  })
+  const loginUrl = SCRIPT_URL + '?action=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
+  fetch(loginUrl)
   .then(r => r.json())
   .then(data => {
     btn.textContent = 'Sign in';
@@ -887,7 +884,7 @@ function submitCSV() {
   saveStatus.textContent = `Saving ${validRows.length} rows to Google Sheets...`;
 
   Promise.all(validRows.map(row =>
-    fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({...row, action:'save'})})
+    fetch(SCRIPT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify({...row})))
   )).then(() => {
     saveStatus.className = 'save-status saved';
     saveStatus.textContent = `✓ ${validRows.length} rows saved to Google Sheets`;
@@ -1031,7 +1028,7 @@ function submitForm() {
   saveStatus.className = 'save-status saving';
   saveStatus.textContent = 'Saving to Google Sheets...';
 
-  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({...payload, action:'save'})})
+  fetch(SCRIPT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify({...payload})))
   .then(()=>{saveStatus.className='save-status saved';saveStatus.textContent='✓ Saved to Google Sheets';})
   .catch(()=>{saveStatus.className='save-status failed';saveStatus.textContent='Could not save — please contact your administrator.';});
   window.scrollTo({top:0,behavior:'smooth'});
