@@ -884,11 +884,13 @@ const manualColOptions = {
 
 const manualReadonly = new Set(['Vendor Name','Publication ID','Promotion Month']);
 
-// Publication dropdown uses vendor-filtered list
-const pubNames = publications
-  .filter(p => p.vendor === currentVendor)
-  .sort((a,b) => a.name.localeCompare(b.name))
-  .map(p => p.name);
+// Publication dropdown — built fresh each render using current vendor
+function getPubNames() {
+  return publications
+    .filter(p => p.vendor === currentVendor)
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .map(p => p.name);
+}
 
 let manualRows = [];
 
@@ -951,7 +953,7 @@ function renderManualTable() {
       }
       // Publication Name — filtered to vendor
       if (c === 'Publication Name') {
-        const opts = pubNames.map(n => `<option value="${escHtml(n)}" ${n===val?'selected':''}>${escHtml(n)}</option>`).join('');
+        const opts = getPubNames().map(n => `<option value="${escHtml(n)}" ${n===val?'selected':''}>${escHtml(n)}</option>`).join('');
         return `<td><select onchange="onManualCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:3px;background:var(--white);">
           <option value="">—</option>${opts}</select></td>`;
       }
