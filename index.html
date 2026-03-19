@@ -820,16 +820,18 @@ function renderCSVResults() {
 
   const thead = document.getElementById('csvTableHead');
   const tbody = document.getElementById('csvTableBody');
-  thead.innerHTML = '<tr><th>Row</th><th>Status</th><th>Campaign Type</th><th>Publication</th><th>Tactic</th><th>TRK</th><th>Clicks</th><th>Issues</th></tr>';
+  const allCols = [
+    'Campaign Type','Vendor Name','Publication ID','Publication Name',
+    'Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme',
+    'Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions',
+    'LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'
+  ];
+  thead.innerHTML = '<tr><th>Row</th><th>Status</th>' + allCols.map(c => '<th>'+c+'</th>').join('') + '<th>Issues</th></tr>';
   tbody.innerHTML = csvRows.map((r,i) =>
     `<tr class="${r.valid?'row-ok':'row-err'}">
       <td>${i+1}</td>
       <td><span class="row-status ${r.valid?'ok':'err'}">${r.valid?'Valid':'Error'}</span></td>
-      <td>${r.row['Campaign Type']||'—'}</td>
-      <td>${r.row['Publication Name']||'—'}</td>
-      <td>${r.row['Tactic Type']||'—'}</td>
-      <td>${r.row['TRK']||'—'}</td>
-      <td>${r.row['Clicks']||'—'}</td>
+      ${allCols.map(c => '<td>'+(r.row[c]||'<span style="color:var(--border)">null</span>')+'</td>').join('')}
       <td>${r.errors.length?'<div class="err-list">'+r.errors.join('<br>')+'</div>':'—'}</td>
     </tr>`
   ).join('');
