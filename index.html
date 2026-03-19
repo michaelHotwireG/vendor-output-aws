@@ -879,6 +879,12 @@ function addManualRow() {
   }, 50);
 }
 
+function deleteManualRow(rowIdx) {
+  if (manualRows.length <= 1) return;
+  manualRows.splice(rowIdx, 1);
+  renderManualTable();
+}
+
 function duplicateLastRow() {
   if (manualRows.length === 0) return;
   const last = JSON.parse(JSON.stringify(manualRows[manualRows.length - 1]));
@@ -896,7 +902,7 @@ function renderManualTable() {
   const count = document.getElementById('manualRowCount');
   if (count) count.textContent = manualRows.length + (manualRows.length === 1 ? ' row' : ' rows');
 
-  thead.innerHTML = '<tr><th style="min-width:36px">Row</th>' +
+  thead.innerHTML = '<tr><th style="min-width:36px">Row</th><th style="min-width:40px"></th>' +
     manualAllCols.map(c => '<th style="min-width:' + getColWidth(c) + '">' + c + '</th>').join('') +
     '<th>Status</th></tr>';
 
@@ -925,8 +931,12 @@ function renderManualTable() {
         onfocus="this.style.border='1px solid var(--aws-orange)';this.style.background='var(--aws-orange-light)'"
         onblur="this.style.border='1px solid transparent';this.style.background='transparent'" /></td>`;
     }).join('');
+    const deleteBtn = manualRows.length > 1
+      ? `<button onclick="deleteManualRow(${i})" title="Delete row" style="background:none;border:none;cursor:pointer;color:var(--error);font-size:14px;padding:2px 6px;border-radius:3px;line-height:1;" onmouseover="this.style.background='var(--error-light)'" onmouseout="this.style.background='none'">✕</button>`
+      : `<span style="color:var(--border);font-size:14px;padding:2px 6px;">✕</span>`;
     return `<tr class="${valid?'row-ok':'row-err'}" id="manual-row-${i}">
       <td style="font-size:11px;color:var(--muted);text-align:center">${i+1}</td>
+      <td style="text-align:center">${deleteBtn}</td>
       ${cells}
       <td><span class="row-status ${valid?'ok':'err'}">${valid?'Valid':errors[0]||'Error'}</span></td>
     </tr>`;
