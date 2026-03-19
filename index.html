@@ -826,15 +826,45 @@ function renderCSVResults() {
     'Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions',
     'LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'
   ];
+
+  // Dropdown options for controlled fields
+  const colOptions = {
+    'Campaign Type': ['AWS Marketplace','AWS Marketplace - Thematic'],
+    'Tactic Type': ['Dedicated Email','Newsletter','Display','LinkedIn Group Post'],
+    'Campaign Theme': ['Data & AI','Security','BizApps','Industry','Infrastructure','Migration'],
+    'Campaign Sub-theme': ['Financial Services','Healthcare','Retail','Manufacturing','CRM','ERP','Analytics'],
+    'Promotion Name': ['D/AI FEB','Security MAR','BizApps APR','Industry MAY','Infrastructure JUN','Migration JUL','Data & AI AUG','Security SEP']
+  };
+
+  // Readonly fields (auto-derived)
+  const readonlyCols = new Set(['Vendor Name','Publication ID','Promotion Month']);
+
   thead.innerHTML = '<tr><th>Row</th><th>Status</th>' + allCols.map(c => '<th>'+c+'</th>').join('') + '<th>Issues</th></tr>';
-  tbody.innerHTML = csvRows.map((r,i) =>
-    `<tr class="${r.valid?'row-ok':'row-err'}">
-      <td>${i+1}</td>
-      <td><span class="row-status ${r.valid?'ok':'err'}">${r.valid?'Valid':'Error'}</span></td>
-      ${allCols.map(c => '<td>'+(r.row[c]||'<span style="color:var(--border)">null</span>')+'</td>').join('')}
-      <td>${r.errors.length?'<div class="err-list">'+r.errors.join('<br>')+'</div>':'—'}</td>
-    </tr>`
-  ).join('');
+
+  tbody.innerHTML = csvRows.map((r,i) => {
+    const cells = allCols.map(c => {
+      const val = r.row[c] || '';
+      if (readonlyCols.has(c)) {
+        return `<td><input type="text" value="${val}" readonly style="background:var(--bg);color:var(--muted);width:100%;min-width:80px;border:none;font-size:11px;padding:3px 5px;" /></td>`;
+      }
+      if (colOptions[c]) {
+        const opts = colOptions[c].map(o => `<option value="${o}" ${o===val?'selected':''}>${o}</option>`).join('');
+        return `<td><select data-row="${i}" data-col="${c}" onchange="onCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:100px;font-size:11px;padding:3px 4px;border:1px solid var(--border);border-radius:3px;background:var(--white);">
+          <option value="">—</option>${opts}</select></td>`;
+      }
+      return `<td><input type="text" data-row="${i}" data-col="${c}" value="${val}" placeholder="null"
+        onchange="onCellEdit(${i},'${c}',this.value)"
+        style="width:100%;min-width:80px;font-size:11px;padding:3px 5px;border:1px solid transparent;border-radius:3px;background:transparent;"
+        onfocus="this.style.border='1px solid var(--aws-orange)';this.style.background='var(--aws-orange-light)'"
+        onblur="this.style.border='1px solid transparent';this.style.background='transparent'" /></td>`;
+    }).join('');
+    return `<tr class="${r.valid?'row-ok':'row-err'}" id="csv-row-${i}">
+      <td style="font-size:11px;color:var(--muted)">${i+1}</td>
+      <td><span class="row-status ${r.valid?'ok':'err'}" id="row-status-${i}">${r.valid?'Valid':'Error'}</span></td>
+      ${cells}
+      <td id="row-errors-${i}" style="min-width:140px">${r.errors.length?'<div class="err-list">'+r.errors.join('<br>')+'</div>':'—'}</td>
+    </tr>`;
+  }).join('');
 
   const btn = document.getElementById('csvSubmitBtn');
   const note = document.getElementById('csvSubmitNote');
@@ -844,6 +874,73 @@ function renderCSVResults() {
     : 'No valid rows to submit.';
 
   document.getElementById('csvResults').style.display = 'block';
+}
+
+function onCellEdit(rowIdx, col, value) {
+  // Update the data
+  csvRows[rowIdx].row[col] = value;
+
+  // Handle derived fields
+  if (col === 'Publication Name') {
+    const pub = publications.find(p => p.name === value);
+    if (pub) {
+      csvRows[rowIdx].row['Publication ID'] = pub.id;
+      // Update the readonly Publication ID cell
+      const allCols = ['Campaign Type','Vendor Name','Publication ID','Publication Name','Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme','Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions','LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'];
+      const idIdx = allCols.indexOf('Publication ID');
+      const row = document.getElementById('csv-row-' + rowIdx);
+      if (row) {
+        const cells = row.querySelectorAll('td');
+        const cell = cells[idIdx + 2]; // +2 for Row and Status columns
+        if (cell) cell.querySelector('input').value = pub.id;
+      }
+    }
+  }
+  if (col === 'Promotion Name') {
+    const months = {"D/AI FEB":"February","Security MAR":"March","BizApps APR":"April","Industry MAY":"May","Infrastructure JUN":"June","Migration JUL":"July","Data & AI AUG":"August","Security SEP":"September"};
+    csvRows[rowIdx].row['Promotion Month'] = months[value] || '';
+    const allCols = ['Campaign Type','Vendor Name','Publication ID','Publication Name','Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme','Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions','LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'];
+    const mIdx = allCols.indexOf('Promotion Month');
+    const row = document.getElementById('csv-row-' + rowIdx);
+    if (row) {
+      const cells = row.querySelectorAll('td');
+      const cell = cells[mIdx + 2];
+      if (cell) cell.querySelector('input').value = months[value] || '';
+    }
+  }
+
+  // Re-validate the row
+  const errors = validateCSVRow(csvRows[rowIdx].row);
+  csvRows[rowIdx].errors = errors;
+  csvRows[rowIdx].valid = errors.length === 0;
+
+  // Update status badge
+  const statusEl = document.getElementById('row-status-' + rowIdx);
+  const rowEl = document.getElementById('csv-row-' + rowIdx);
+  const errEl = document.getElementById('row-errors-' + rowIdx);
+  if (statusEl) {
+    statusEl.textContent = errors.length === 0 ? 'Valid' : 'Error';
+    statusEl.className = 'row-status ' + (errors.length === 0 ? 'ok' : 'err');
+  }
+  if (rowEl) rowEl.className = errors.length === 0 ? 'row-ok' : 'row-err';
+  if (errEl) errEl.innerHTML = errors.length ? '<div class="err-list">'+errors.join('<br>')+'</div>' : '—';
+
+  // Update summary counts
+  const total = csvRows.length;
+  const valid = csvRows.filter(r => r.valid).length;
+  const errs  = total - valid;
+  document.getElementById('csvSummary').innerHTML =
+    `<div class="csv-stat total">${total} rows total</div>` +
+    `<div class="csv-stat ok">${valid} valid</div>` +
+    (errs > 0 ? `<div class="csv-stat err">${errs} with errors</div>` : '');
+
+  // Update submit button
+  const btn = document.getElementById('csvSubmitBtn');
+  const note = document.getElementById('csvSubmitNote');
+  btn.disabled = valid === 0;
+  note.textContent = valid > 0
+    ? `${valid} valid row${valid>1?'s':''} will be submitted.${errs>0?' '+errs+' row(s) with errors will be skipped.':''}`
+    : 'No valid rows to submit.';
 }
 
 function submitCSV() {
