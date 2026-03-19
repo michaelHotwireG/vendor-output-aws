@@ -258,192 +258,28 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   <button class="back-btn" onclick="showPortal()">← Back to portal</button>
   <div class="form-section-hdr">
     <h2>Manual Campaign Entry</h2>
-    <p>All fields marked <span style="color:var(--aws-orange)">*</span> are required.</p>
+    <p>Edit cells directly then click Submit when ready. Required fields are highlighted if missing.</p>
   </div>
 
-  <div class="section">
-    <div class="section-header"><span class="section-num">01</span><span class="section-title">Campaign Information</span></div>
-    <div class="field-grid cols-2">
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Campaign Type</label>
-        <select id="campaignType" onchange="onCampaignTypeChange()">
-          <option value="">— Select —</option>
-          <option value="AWS Marketplace">AWS Marketplace</option>
-          <option value="AWS Marketplace - Thematic">AWS Marketplace - Thematic</option>
-        </select>
-        <div class="field-error" id="err-campaignType">Campaign type is required</div>
-      </div>
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Tactic Type</label>
-        <select id="tacticType" onchange="onTacticTypeChange()">
-          <option value="">— Select —</option>
-          <option value="Dedicated Email">Dedicated Email</option>
-          <option value="Newsletter">Newsletter</option>
-          <option value="Display">Display</option>
-          <option value="LinkedIn Group Post">LinkedIn Group Post</option>
-        </select>
-        <div class="field-error" id="err-tacticType">Tactic type is required</div>
-      </div>
-    </div>
-    <div class="conditional-block" id="thematicBlock">
-      <div class="conditional-label">Required for Thematic campaigns</div>
-      <div class="field-grid cols-2">
-        <div class="field">
-          <label class="field-label"><span class="req-star">*</span> Campaign Theme <span class="cond-tag">Thematic only</span></label>
-          <select id="campaignTheme" onchange="onThemeChange()">
-            <option value="">— Select —</option>
-            <option value="Data & AI">Data & AI</option>
-            <option value="Security">Security</option>
-            <option value="BizApps">BizApps</option>
-            <option value="Industry">Industry</option>
-            <option value="Infrastructure">Infrastructure</option>
-            <option value="Migration">Migration</option>
-          </select>
-          <div class="field-error" id="err-campaignTheme">Campaign theme is required for Thematic</div>
-        </div>
-        <div class="field" id="subthemeField" style="display:none">
-          <label class="field-label"><span class="req-star">*</span> Campaign Sub-theme <span class="cond-tag">BizApps / Industry</span></label>
-          <select id="campaignSubtheme">
-            <option value="">— Select —</option>
-            <option value="Financial Services">Financial Services</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Retail">Retail</option>
-            <option value="Manufacturing">Manufacturing</option>
-            <option value="CRM">CRM</option>
-            <option value="ERP">ERP</option>
-            <option value="Analytics">Analytics</option>
-          </select>
-          <div class="field-error" id="err-campaignSubtheme">Sub-theme is required for BizApps / Industry</div>
-        </div>
-      </div>
-    </div>
+  <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;">
+    <button class="csv-template-btn" onclick="addManualRow()" style="border-color:var(--aws-orange);color:var(--aws-orange);">+ Add row</button>
+    <span style="font-size:12px;color:var(--muted);" id="manualRowCount">1 row</span>
   </div>
 
-  <div class="section">
-    <div class="section-header"><span class="section-num">02</span><span class="section-title">Vendor & Publication</span></div>
-    <div class="field-grid cols-2">
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Vendor Name</label>
-        <input type="text" id="vendorName" readonly/>
-      </div>
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Publication Name</label>
-        <select id="publicationName" onchange="onPublicationChange()">
-          <option value="">— Select publication —</option>
-        </select>
-        <div class="field-error" id="err-publicationName">Publication name is required</div>
-      </div>
-      <div class="field">
-        <label class="field-label">Publication ID</label>
-        <input type="text" id="publicationId" readonly placeholder="Auto-filled"/>
-      </div>
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> Promotion Name</label>
-        <select id="promotionName" onchange="onPromotionChange()">
-          <option value="">— Select —</option>
-          <option value="D/AI FEB">D/AI FEB</option>
-          <option value="Security MAR">Security MAR</option>
-          <option value="BizApps APR">BizApps APR</option>
-          <option value="Industry MAY">Industry MAY</option>
-          <option value="Infrastructure JUN">Infrastructure JUN</option>
-          <option value="Migration JUL">Migration JUL</option>
-          <option value="Data & AI AUG">Data & AI AUG</option>
-          <option value="Security SEP">Security SEP</option>
-        </select>
-        <div class="field-error" id="err-promotionName">Promotion name is required</div>
-      </div>
-      <div class="field">
-        <label class="field-label">Promotion Month <span class="opt-tag">Derived</span></label>
-        <input type="text" id="promotionMonth" readonly placeholder="Derived from promotion"/>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header"><span class="section-num">03</span><span class="section-title">Tracking</span></div>
-    <div class="field-grid cols-2">
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> TRK Code</label>
-        <input type="text" id="trk" placeholder="e.g. trk_example_001"/>
-        <div class="field-error" id="err-trk">TRK code is required</div>
-      </div>
-      <div class="field">
-        <label class="field-label"><span class="req-star">*</span> CTA URL</label>
-        <input type="url" id="ctaUrl" placeholder="https://aws.amazon.com/..."/>
-        <div class="field-error" id="err-ctaUrl">CTA URL is required</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header"><span class="section-num">04</span><span class="section-title">Performance Metrics</span><span class="section-desc">Fields activate based on tactic type</span></div>
-    <div class="metrics-block">
-      <div class="metrics-header">DELIVERY & ENGAGEMENT METRICS</div>
-      <div class="metrics-body">
-        <div class="metric-row">
-          <div class="field">
-            <label class="field-label">Delivered Sends <span class="badge-email">Email</span></label>
-            <input type="number" id="deliveredSends" placeholder="—" min="0" disabled/>
-            <div class="field-hint">Email / Newsletter only</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Opens <span class="badge-email">Email</span></label>
-            <input type="number" id="opens" placeholder="—" min="0" disabled/>
-            <div class="field-hint">Email / Newsletter only</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Impressions <span class="badge-display">Display</span></label>
-            <input type="number" id="impressions" placeholder="—" min="0" disabled/>
-            <div class="field-hint">Display / LinkedIn only</div>
-          </div>
-        </div>
-        <div class="metric-row">
-          <div class="field">
-            <label class="field-label">LinkedIn Likes <span class="badge-linkedin">LinkedIn</span></label>
-            <input type="number" id="linkedinLikes" placeholder="—" min="0" disabled/>
-          </div>
-          <div class="field">
-            <label class="field-label">LinkedIn Comments <span class="badge-linkedin">LinkedIn</span></label>
-            <input type="number" id="linkedinComments" placeholder="—" min="0" disabled/>
-          </div>
-          <div class="field">
-            <label class="field-label">LinkedIn Views <span class="badge-linkedin">LinkedIn</span></label>
-            <input type="number" id="linkedinViews" placeholder="—" min="0" disabled/>
-          </div>
-        </div>
-        <div class="metric-row">
-          <div class="field">
-            <label class="field-label"><span class="req-star">*</span> Clicks <span class="badge-all">All</span></label>
-            <input type="number" id="clicks" placeholder="Whole number" min="0"/>
-            <div class="field-error" id="err-clicks">Clicks is required</div>
-          </div>
-          <div class="field">
-            <label class="field-label">Unique Clicks <span class="opt-tag">Optional</span></label>
-            <input type="number" id="uniqueClicks" placeholder="Whole number" min="0"/>
-          </div>
-          <div class="field"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header"><span class="section-num">05</span><span class="section-title">Notes</span></div>
-    <div class="field">
-      <label class="field-label">Notes <span class="opt-tag">Optional</span></label>
-      <textarea id="notes" placeholder="Any additional context..." maxlength="500"></textarea>
-      <div class="field-hint"><span id="notesCount">0</span>/500 characters</div>
-    </div>
+  <div class="csv-table-wrap">
+    <table class="csv-table" id="manualTable">
+      <thead id="manualTableHead"></thead>
+      <tbody id="manualTableBody"></tbody>
+    </table>
   </div>
 
   <div class="submit-area">
-    <button class="submit-btn" onclick="submitForm()">Submit Campaign Data</button>
-    <button class="reset-btn" onclick="resetForm()">Reset</button>
-    <span class="error-summary" id="errorSummary">Please fix the errors above before submitting.</span>
+    <button class="submit-btn" onclick="submitManual()">Submit</button>
+    <button class="reset-btn" onclick="resetManual()">Reset</button>
+    <span class="error-summary" id="manualErrorSummary"></span>
   </div>
 </div>
 
-<!-- ── SUCCESS ───────────────────────────────────────────────────────────── -->
 <div id="successSection">
   <div class="success-card">
     <div class="success-icon">✓</div>
@@ -718,8 +554,7 @@ function showCSV() {
 function showForm() {
   hideAll();
   document.getElementById('formSection').style.display = 'block';
-  document.getElementById('vendorName').value = currentVendor;
-  populatePublications(currentVendor);
+  initManualTable();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -995,160 +830,188 @@ function submitCSV() {
 }
 
 // ── FORM LOGIC ─────────────────────────────────────────────────────────────
-function populatePublications(vendor) {
-  const sel = document.getElementById('publicationName');
-  sel.innerHTML = '<option value="">— Select publication —</option>';
-  document.getElementById('publicationId').value = '';
-  const pubs = publications.filter(p => p.vendor === vendor).sort((a,b) => a.name.localeCompare(b.name));
-  pubs.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.name; opt.dataset.id = p.id; opt.textContent = p.name;
-    sel.appendChild(opt);
-  });
-  if (pubs.length === 1) {
-    sel.value = pubs[0].name;
-    document.getElementById('publicationId').value = pubs[0].id;
+// ── MANUAL ENTRY (SPREADSHEET VIEW) ───────────────────────────────────────
+const manualAllCols = [
+  'Campaign Type','Vendor Name','Publication ID','Publication Name',
+  'Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme',
+  'Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions',
+  'LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'
+];
+
+const manualColOptions = {
+  'Campaign Type': ['AWS Marketplace','AWS Marketplace - Thematic'],
+  'Tactic Type': ['Dedicated Email','Newsletter','Display','LinkedIn Group Post'],
+  'Campaign Theme': ['Data & AI','Security','BizApps','Industry','Infrastructure','Migration'],
+  'Campaign Sub-theme': ['Financial Services','Healthcare','Retail','Manufacturing','CRM','ERP','Analytics'],
+  'Promotion Name': ['D/AI FEB','Security MAR','BizApps APR','Industry MAY','Infrastructure JUN','Migration JUL','Data & AI AUG','Security SEP']
+};
+
+const manualReadonly = new Set(['Vendor Name','Publication ID','Promotion Month']);
+
+// Publication dropdown uses vendor-filtered list
+const pubNames = publications
+  .filter(p => p.vendor === currentVendor)
+  .sort((a,b) => a.name.localeCompare(b.name))
+  .map(p => p.name);
+
+let manualRows = [];
+
+function initManualTable() {
+  manualRows = [createEmptyManualRow()];
+  renderManualTable();
+}
+
+function createEmptyManualRow() {
+  const row = {};
+  manualAllCols.forEach(c => row[c] = '');
+  row['Vendor Name'] = currentVendor;
+  return row;
+}
+
+function addManualRow() {
+  manualRows.push(createEmptyManualRow());
+  renderManualTable();
+  // Scroll to new row
+  setTimeout(() => {
+    const tbody = document.getElementById('manualTableBody');
+    tbody.lastElementChild && tbody.lastElementChild.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 50);
+}
+
+function renderManualTable() {
+  const thead = document.getElementById('manualTableHead');
+  const tbody = document.getElementById('manualTableBody');
+  const count = document.getElementById('manualRowCount');
+  if (count) count.textContent = manualRows.length + (manualRows.length === 1 ? ' row' : ' rows');
+
+  thead.innerHTML = '<tr><th style="min-width:36px">Row</th>' +
+    manualAllCols.map(c => '<th style="min-width:' + getColWidth(c) + '">' + c + '</th>').join('') +
+    '<th>Status</th></tr>';
+
+  tbody.innerHTML = manualRows.map((row, i) => {
+    const errors = validateCSVRow(row);
+    const valid = errors.length === 0;
+    const cells = manualAllCols.map(c => {
+      const val = row[c] || '';
+      if (manualReadonly.has(c)) {
+        return `<td><input type="text" value="${escHtml(val)}" readonly style="background:var(--bg);color:var(--muted);width:100%;border:none;font-size:11px;padding:4px 6px;min-width:${getColWidth(c)};" /></td>`;
+      }
+      // Publication Name — filtered to vendor
+      if (c === 'Publication Name') {
+        const opts = pubNames.map(n => `<option value="${escHtml(n)}" ${n===val?'selected':''}>${escHtml(n)}</option>`).join('');
+        return `<td><select onchange="onManualCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:3px;background:var(--white);">
+          <option value="">—</option>${opts}</select></td>`;
+      }
+      if (manualColOptions[c]) {
+        const opts = manualColOptions[c].map(o => `<option value="${o}" ${o===val?'selected':''}>${o}</option>`).join('');
+        return `<td><select onchange="onManualCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:3px;background:var(--white);">
+          <option value="">—</option>${opts}</select></td>`;
+      }
+      return `<td><input type="text" value="${escHtml(val)}" placeholder="—"
+        onchange="onManualCellEdit(${i},'${c}',this.value)"
+        style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 6px;border:1px solid transparent;border-radius:3px;background:transparent;"
+        onfocus="this.style.border='1px solid var(--aws-orange)';this.style.background='var(--aws-orange-light)'"
+        onblur="this.style.border='1px solid transparent';this.style.background='transparent'" /></td>`;
+    }).join('');
+    return `<tr class="${valid?'row-ok':'row-err'}" id="manual-row-${i}">
+      <td style="font-size:11px;color:var(--muted);text-align:center">${i+1}</td>
+      ${cells}
+      <td><span class="row-status ${valid?'ok':'err'}">${valid?'Valid':errors[0]||'Error'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function getColWidth(c) {
+  const wide = {'Publication Name':'180px','CTA URL':'160px','Campaign Theme':'130px','Campaign Sub-theme':'130px','Promotion Name':'130px','Notes':'160px'};
+  return wide[c] || '90px';
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function onManualCellEdit(rowIdx, col, value) {
+  manualRows[rowIdx][col] = value;
+
+  // Auto-fill derived fields
+  if (col === 'Publication Name') {
+    const pub = publications.find(p => p.name === value);
+    if (pub) manualRows[rowIdx]['Publication ID'] = pub.id;
   }
-}
-
-function onPublicationChange() {
-  const sel = document.getElementById('publicationName');
-  const opt = sel.options[sel.selectedIndex];
-  document.getElementById('publicationId').value = opt ? (opt.dataset.id||'') : '';
-}
-
-function onPromotionChange() {
-  const promo = document.getElementById('promotionName').value;
-  document.getElementById('promotionMonth').value = promotionMonths[promo]||'';
-}
-
-function onCampaignTypeChange() {
-  const val = document.getElementById('campaignType').value;
-  const block = document.getElementById('thematicBlock');
-  block.classList.toggle('visible', val === 'AWS Marketplace - Thematic');
-  if (val !== 'AWS Marketplace - Thematic') {
-    document.getElementById('campaignTheme').value = '';
-    document.getElementById('campaignSubtheme').value = '';
-    document.getElementById('subthemeField').style.display = 'none';
+  if (col === 'Promotion Name') {
+    manualRows[rowIdx]['Promotion Month'] = promotionMonths[value] || '';
   }
+
+  renderManualTable();
 }
 
-function onThemeChange() {
-  const theme = document.getElementById('campaignTheme').value;
-  const sub = document.getElementById('subthemeField');
-  const needs = theme==='BizApps'||theme==='Industry';
-  sub.style.display = needs ? 'block' : 'none';
-  if (!needs) document.getElementById('campaignSubtheme').value = '';
-}
+function submitManual() {
+  const validRows = manualRows.filter(row => validateCSVRow(row).length === 0);
+  const invalidCount = manualRows.length - validRows.length;
 
-function onTacticTypeChange() {
-  const t = document.getElementById('tacticType').value;
-  const isEmail = t==='Dedicated Email'||t==='Newsletter';
-  const isDisplay = t==='Display';
-  const isLI = t==='LinkedIn Group Post';
-  setMetric('deliveredSends', isEmail);
-  setMetric('opens', isEmail);
-  setMetric('impressions', isDisplay||isLI);
-  setMetric('linkedinLikes', isLI);
-  setMetric('linkedinComments', isLI);
-  setMetric('linkedinViews', isLI);
-}
-
-function setMetric(id, active) {
-  const el = document.getElementById(id);
-  el.disabled = !active;
-  if (!active) el.value = '';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('notes').addEventListener('input', function() {
-    document.getElementById('notesCount').textContent = this.value.length;
-  });
-});
-
-function validateForm() {
-  let valid = true;
-  function check(id, required) {
-    const el = document.getElementById(id);
-    const err = document.getElementById('err-'+id);
-    const fail = required && !el.value.trim();
-    el.classList.toggle('error', fail);
-    if (err) err.style.display = fail ? 'block' : 'none';
-    if (fail) valid = false;
-  }
-  check('campaignType',true); check('tacticType',true);
-  check('publicationName',true); check('promotionName',true);
-  check('trk',true); check('ctaUrl',true); check('clicks',true);
-  const isThematic = document.getElementById('campaignType').value === 'AWS Marketplace - Thematic';
-  check('campaignTheme', isThematic);
-  const theme = document.getElementById('campaignTheme').value;
-  check('campaignSubtheme', isThematic && (theme==='BizApps'||theme==='Industry'));
-  return valid;
-}
-
-function submitForm() {
-  if (!validateForm()) {
-    document.getElementById('errorSummary').style.display = 'inline';
+  if (validRows.length === 0) {
+    const err = document.getElementById('manualErrorSummary');
+    err.textContent = 'No valid rows to submit. Please fix errors above.';
+    err.style.display = 'inline';
     return;
   }
-  const payload = {
-    campaignType:     document.getElementById('campaignType').value,
-    tacticType:       document.getElementById('tacticType').value,
-    campaignTheme:    document.getElementById('campaignTheme').value,
-    campaignSubtheme: document.getElementById('campaignSubtheme').value,
-    vendorName:       currentVendor,
-    publicationId:    document.getElementById('publicationId').value,
-    publicationName:  document.getElementById('publicationName').value,
-    promotionName:    document.getElementById('promotionName').value,
-    promotionMonth:   document.getElementById('promotionMonth').value,
-    trk:              document.getElementById('trk').value,
-    ctaUrl:           document.getElementById('ctaUrl').value,
-    deliveredSends:   document.getElementById('deliveredSends').value,
-    opens:            document.getElementById('opens').value,
-    impressions:      document.getElementById('impressions').value,
-    linkedinLikes:    document.getElementById('linkedinLikes').value,
-    linkedinComments: document.getElementById('linkedinComments').value,
-    linkedinViews:    document.getElementById('linkedinViews').value,
-    clicks:           document.getElementById('clicks').value,
-    uniqueClicks:     document.getElementById('uniqueClicks').value,
-    notes:            document.getElementById('notes').value
-  };
+
   hideAll();
   document.getElementById('successSection').style.display = 'block';
   document.getElementById('successMeta').innerHTML = [
     ['Vendor', currentVendor],
-    ['Publication', payload.publicationName],
-    ['Campaign Type', payload.campaignType],
-    ['Tactic Type', payload.tacticType],
-    ['Clicks', payload.clicks]
-  ].map(([k,v])=>`<div class="success-meta-row"><span>${k}</span><span>${v||'—'}</span></div>`).join('');
+    ['Rows submitted', validRows.length],
+    ['Rows skipped', invalidCount],
+    ['Submission type', 'Manual Entry']
+  ].map(([k,v]) => `<div class="success-meta-row"><span>${k}</span><span>${v}</span></div>`).join('');
 
   const saveStatus = document.getElementById('saveStatus');
   saveStatus.className = 'save-status saving';
-  saveStatus.textContent = 'Saving to Google Sheets...';
+  saveStatus.textContent = `Saving ${validRows.length} row${validRows.length>1?'s':''} to Google Sheets...`;
 
-  fetch(SCRIPT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify({...payload})))
-  .then(()=>{saveStatus.className='save-status saved';saveStatus.textContent='✓ Saved to Google Sheets';})
-  .catch(()=>{saveStatus.className='save-status failed';saveStatus.textContent='Could not save — please contact your administrator.';});
+  Promise.all(validRows.map(row => {
+    const payload = {
+      action:'save',
+      campaignType:     row['Campaign Type'],
+      tacticType:       row['Tactic Type'],
+      campaignTheme:    row['Campaign Theme'],
+      campaignSubtheme: row['Campaign Sub-theme'],
+      vendorName:       row['Vendor Name'],
+      publicationId:    row['Publication ID'],
+      publicationName:  row['Publication Name'],
+      promotionName:    row['Promotion Name'],
+      promotionMonth:   row['Promotion Month'],
+      trk:              row['TRK'],
+      ctaUrl:           row['CTA URL'],
+      deliveredSends:   row['Delivered Sends'],
+      opens:            row['Opens'],
+      impressions:      row['Impressions'],
+      linkedinLikes:    row['LinkedIn Likes'],
+      linkedinComments: row['LinkedIn Comments'],
+      linkedinViews:    row['LinkedIn Views'],
+      clicks:           row['Clicks'],
+      uniqueClicks:     row['Unique Clicks'],
+      notes:            row['Notes']
+    };
+    return fetch(SCRIPT_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(payload)));
+  }))
+  .then(() => {
+    saveStatus.className = 'save-status saved';
+    saveStatus.textContent = `✓ ${validRows.length} row${validRows.length>1?'s':''} saved to Google Sheets`;
+  })
+  .catch(() => {
+    saveStatus.className = 'save-status failed';
+    saveStatus.textContent = 'Could not save — please contact your administrator.';
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function resetForm() {
-  document.querySelectorAll('#formSection input:not([readonly]), #formSection select, #formSection textarea')
-    .forEach(el => el.value='');
-  document.querySelectorAll('.error').forEach(el=>el.classList.remove('error'));
-  document.querySelectorAll('.field-error').forEach(el=>el.style.display='none');
-  document.getElementById('thematicBlock').classList.remove('visible');
-  document.getElementById('subthemeField').style.display='none';
-  document.getElementById('publicationId').value='';
-  document.getElementById('promotionMonth').value='';
-  document.getElementById('notesCount').textContent='0';
-  document.getElementById('errorSummary').style.display='none';
-  document.getElementById('vendorName').value = currentVendor;
-  populatePublications(currentVendor);
-  ['deliveredSends','opens','impressions','linkedinLikes','linkedinComments','linkedinViews']
-    .forEach(id=>setMetric(id,false));
+function resetManual() {
+  manualRows = [createEmptyManualRow()];
+  renderManualTable();
+  document.getElementById('manualErrorSummary').style.display = 'none';
 }
+
 </script>
 </body>
 </html>
