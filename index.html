@@ -261,8 +261,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <p>Edit cells directly then click Submit when ready. Required fields are highlighted if missing.</p>
   </div>
 
-  <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;">
-    <button class="csv-template-btn" onclick="addManualRow()" style="border-color:var(--aws-orange);color:var(--aws-orange);">+ Add row</button>
+  <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button class="csv-template-btn" onclick="addManualRow()" style="border-color:var(--aws-orange);color:var(--aws-orange);">+ Add empty row</button>
+    <button class="csv-template-btn" onclick="duplicateLastRow()" style="border-color:var(--border);color:var(--muted);">+ Duplicate last row</button>
     <span style="font-size:12px;color:var(--muted);" id="manualRowCount">1 row</span>
   </div>
 
@@ -872,6 +873,17 @@ function addManualRow() {
   manualRows.push(createEmptyManualRow());
   renderManualTable();
   // Scroll to new row
+  setTimeout(() => {
+    const tbody = document.getElementById('manualTableBody');
+    tbody.lastElementChild && tbody.lastElementChild.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 50);
+}
+
+function duplicateLastRow() {
+  if (manualRows.length === 0) return;
+  const last = JSON.parse(JSON.stringify(manualRows[manualRows.length - 1]));
+  manualRows.push(last);
+  renderManualTable();
   setTimeout(() => {
     const tbody = document.getElementById('manualTableBody');
     tbody.lastElementChild && tbody.lastElementChild.scrollIntoView({behavior:'smooth', block:'center'});
