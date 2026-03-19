@@ -457,7 +457,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPIoXm4zVaM0fQqgRylD5H9JuWu6y36sbalN4EHbsw4WJoO6ywXy5SHz2ZKRajmcP3/exec";
+const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 // ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
@@ -847,7 +847,32 @@ function renderCSVResults() {
 }
 
 function submitCSV() {
-  const validRows = csvRows.filter(r => r.valid).map(r => ({...r.row, vendorName: currentVendor}));
+  const validRows = csvRows.filter(r => r.valid).map(r => {
+    const d = r.row;
+    return {
+      action:           'save',
+      campaignType:     d['Campaign Type']      || '',
+      tacticType:       d['Tactic Type']         || '',
+      campaignTheme:    d['Campaign Theme']      || '',
+      campaignSubtheme: d['Campaign Sub-theme']  || '',
+      vendorName:       currentVendor,
+      publicationId:    d['Publication ID']      || '',
+      publicationName:  d['Publication Name']    || '',
+      promotionName:    d['Promotion Name']      || '',
+      promotionMonth:   d['Promotion Month']     || '',
+      trk:              d['TRK']                 || '',
+      ctaUrl:           d['CTA URL']             || '',
+      deliveredSends:   d['Delivered Sends']     || '',
+      opens:            d['Opens']               || '',
+      impressions:      d['Impressions']         || '',
+      linkedinLikes:    d['LinkedIn Likes']      || '',
+      linkedinComments: d['LinkedIn Comments']   || '',
+      linkedinViews:    d['LinkedIn Views']      || '',
+      clicks:           d['Clicks']              || '',
+      uniqueClicks:     d['Unique Clicks']       || '',
+      notes:            d['Notes']               || ''
+    };
+  });
   hideAll();
   document.getElementById('successSection').style.display = 'block';
   document.getElementById('successMeta').innerHTML = [
@@ -860,9 +885,13 @@ function submitCSV() {
   saveStatus.className = 'save-status saving';
   saveStatus.textContent = `Saving ${validRows.length} rows to Google Sheets...`;
 
-  Promise.all(validRows.map(row =>
-    fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({...row, action:'save'})})
-  )).then(() => {
+  function sendRow(row) {
+    const fd = new FormData();
+    fd.append('data', JSON.stringify({...row, action:'save'}));
+    return fetch(SCRIPT_URL, {method:'POST', body: fd});
+  }
+  Promise.all(validRows.map(row => sendRow(row)))
+  .then(() => {
     saveStatus.className = 'save-status saved';
     saveStatus.textContent = `✓ ${validRows.length} rows saved to Google Sheets`;
   }).catch(() => {
@@ -1005,7 +1034,7 @@ function submitForm() {
   saveStatus.className = 'save-status saving';
   saveStatus.textContent = 'Saving to Google Sheets...';
 
-  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body: JSON.stringify({...payload, action:'save'})})
+  const fd2=new FormData();fd2.append('data',JSON.stringify({...payload,action:'save'}));fetch(SCRIPT_URL,{method:'POST',body:fd2})
   .then(()=>{saveStatus.className='save-status saved';saveStatus.textContent='✓ Saved to Google Sheets';})
   .catch(()=>{saveStatus.className='save-status failed';saveStatus.textContent='Could not save — please contact your administrator.';});
   window.scrollTo({top:0,behavior:'smooth'});
