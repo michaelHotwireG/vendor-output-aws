@@ -751,11 +751,12 @@ function renderCSVResults() {
     'Tactic Type': ["Dedicated Email", "Newsletter", "Display", "LinkedIn Group Post"],
     'Campaign Theme': ["Awareness/Lifecycle", "BizApps", "Data & AI", "DevOps/Developer", "Industry", "Security"],
     'Campaign Sub-theme': ["NA", "BizApps - Customer Service in HC", "BizApps - Productivity", "BizApps - Customer Service", "BizApps - Salesforce", "BizApps - Qualtrics", "Industry - Finserv", "Industry - Healthcare", "Industry - M&E"],
-    'Promotion Name': ["D/AI JAN", "D/AI FEB", "D/AI MAR", "D/AI MAY", "D/AI JUN", "D/AI JUL", "D/AI AUG", "D/AI SEP", "D/AI OCT", "DEV 1 January", "DEV 2 February", "DEV 3 March", "DEV 4 April", "DEV 5 May", "DEV 6 June", "IND - FinServ 1 January", "IND-Healthcare 1 January", "IND-FinServ 3 March", "IND-Healthcare 3 March", "IND-Healthcare 4 April", "IND-Healthcare 5 May", "IND-M&E 4 April", "IND-FinServ 6 June", "IND-M&E 6 June", "SEC 3 March", "SEC 4 April", "BizApps - HC Customer Service 2 February", "BizApps - Productivity 2 February", "BizApps - Customer Experience 4 April", "BizApps - Salesforce AF 5 May", "Confluent FEB", "Elastic FEB", "Palo Alto FEB", "Databricks MAR", "Fortinet MAR", "Security FEB", "MP for Builders FEB", "MongoDB FEB"]
+    'Promotion Name': ["D/AI JAN", "D/AI FEB", "D/AI MAR", "D/AI MAY", "D/AI JUN", "D/AI JUL", "D/AI AUG", "D/AI SEP", "D/AI OCT", "DEV 1 January", "DEV 2 February", "DEV 3 March", "DEV 4 April", "DEV 5 May", "DEV 6 June", "IND - FinServ 1 January", "IND-Healthcare 1 January", "IND-FinServ 3 March", "IND-Healthcare 3 March", "IND-Healthcare 4 April", "IND-Healthcare 5 May", "IND-M&E 4 April", "IND-FinServ 6 June", "IND-M&E 6 June", "SEC 3 March", "SEC 4 April", "BizApps - HC Customer Service 2 February", "BizApps - Productivity 2 February", "BizApps - Customer Experience 4 April", "BizApps - Salesforce AF 5 May", "Confluent FEB", "Elastic FEB", "Palo Alto FEB", "Databricks MAR", "Fortinet MAR", "Security FEB", "MP for Builders FEB", "MongoDB FEB"],
+    'Promotion Month': ["2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10","2026-11","2026-12"]
   };
 
   // Readonly fields (auto-derived)
-  const readonlyCols = new Set(['Vendor Name','Publication ID','Promotion Month']);
+  const readonlyCols = new Set(['Vendor Name','Publication ID']);
 
   thead.innerHTML = '<tr><th>Issues</th><th>Row</th><th>Status</th>' + allCols.map(c => '<th>'+c+'</th>').join('') + '</tr>';
 
@@ -932,10 +933,11 @@ const manualColOptions = {
   'Tactic Type': ["Dedicated Email", "Newsletter", "Display", "LinkedIn Group Post"],
   'Campaign Theme': ["Awareness/Lifecycle", "BizApps", "Data & AI", "DevOps/Developer", "Industry", "Security"],
   'Campaign Sub-theme': ["NA", "BizApps - Customer Service in HC", "BizApps - Productivity", "BizApps - Customer Service", "BizApps - Salesforce", "BizApps - Qualtrics", "Industry - Finserv", "Industry - Healthcare", "Industry - M&E"],
-  'Promotion Name': ["D/AI JAN", "D/AI FEB", "D/AI MAR", "D/AI MAY", "D/AI JUN", "D/AI JUL", "D/AI AUG", "D/AI SEP", "D/AI OCT", "DEV 1 January", "DEV 2 February", "DEV 3 March", "DEV 4 April", "DEV 5 May", "DEV 6 June", "IND - FinServ 1 January", "IND-Healthcare 1 January", "IND-FinServ 3 March", "IND-Healthcare 3 March", "IND-Healthcare 4 April", "IND-Healthcare 5 May", "IND-M&E 4 April", "IND-FinServ 6 June", "IND-M&E 6 June", "SEC 3 March", "SEC 4 April", "BizApps - HC Customer Service 2 February", "BizApps - Productivity 2 February", "BizApps - Customer Experience 4 April", "BizApps - Salesforce AF 5 May", "Confluent FEB", "Elastic FEB", "Palo Alto FEB", "Databricks MAR", "Fortinet MAR", "Security FEB", "MP for Builders FEB", "MongoDB FEB"]
+  'Promotion Name': ["D/AI JAN", "D/AI FEB", "D/AI MAR", "D/AI MAY", "D/AI JUN", "D/AI JUL", "D/AI AUG", "D/AI SEP", "D/AI OCT", "DEV 1 January", "DEV 2 February", "DEV 3 March", "DEV 4 April", "DEV 5 May", "DEV 6 June", "IND - FinServ 1 January", "IND-Healthcare 1 January", "IND-FinServ 3 March", "IND-Healthcare 3 March", "IND-Healthcare 4 April", "IND-Healthcare 5 May", "IND-M&E 4 April", "IND-FinServ 6 June", "IND-M&E 6 June", "SEC 3 March", "SEC 4 April", "BizApps - HC Customer Service 2 February", "BizApps - Productivity 2 February", "BizApps - Customer Experience 4 April", "BizApps - Salesforce AF 5 May", "Confluent FEB", "Elastic FEB", "Palo Alto FEB", "Databricks MAR", "Fortinet MAR", "Security FEB", "MP for Builders FEB", "MongoDB FEB"],
+  'Promotion Month': ["2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10","2026-11","2026-12"]
 };
 
-const manualReadonly = new Set(['Vendor Name','Publication ID','Promotion Month']);
+const manualReadonly = new Set(['Vendor Name','Publication ID']);
 
 // Publication dropdown — built fresh each render using current vendor
 function getPubNames() {
