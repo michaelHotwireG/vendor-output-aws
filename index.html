@@ -58,7 +58,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .portal-card:hover .card-btn{background:var(--aws-orange);color:var(--aws);}
 
 /* ── SECTION WRAPPER ── */
-#csvSection,#formSection{display:none;max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+#csvSection,#formSection{display:none;max-width:100%;margin:0;padding:2rem 1.5rem 4rem;}
 .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:1.5rem;background:none;border:none;font-family:'IBM Plex Sans',sans-serif;padding:0;}
 .back-btn:hover{color:var(--text);}
 
@@ -84,8 +84,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .csv-stat.err{background:var(--error-light);color:var(--error);}
 .csv-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;}
 .csv-table{width:100%;border-collapse:collapse;font-size:12px;}
-.csv-table th{background:var(--aws);color:rgba(255,255,255,0.8);padding:8px 12px;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap;}
-.csv-table td{padding:7px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.csv-table th{background:var(--aws);color:rgba(255,255,255,0.8);padding:8px 12px;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:10;}
+.csv-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
 .csv-table tr:last-child td{border-bottom:none;}
 .csv-table tr.row-ok td{background:var(--white);}
 .csv-table tr.row-err td{background:var(--error-light);}
@@ -240,12 +240,13 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
   <div class="csv-results" id="csvResults">
     <div class="csv-summary" id="csvSummary"></div>
-    <div class="csv-table-wrap">
-      <table class="csv-table" id="csvTable">
-        <thead id="csvTableHead"></thead>
+    <div class="csv-table-wrap" style="overflow:auto;max-height:60vh;min-height:200px;resize:vertical;border:1px solid var(--border);border-radius:6px;">
+      <table class="csv-table" id="csvTable" style="min-width:max-content;">
+        <thead id="csvTableHead" style="position:sticky;top:0;z-index:10;"></thead>
         <tbody id="csvTableBody"></tbody>
       </table>
     </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">↕ Drag bottom-right corner to resize</div>
     <div class="csv-submit-area">
       <button class="csv-submit-btn" id="csvSubmitBtn" onclick="submitCSV()">Submit valid rows</button>
       <span class="csv-note" id="csvSubmitNote"></span>
@@ -267,12 +268,13 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <span style="font-size:12px;color:var(--muted);" id="manualRowCount">1 row</span>
   </div>
 
-  <div class="csv-table-wrap">
-    <table class="csv-table" id="manualTable">
-      <thead id="manualTableHead"></thead>
+  <div class="csv-table-wrap" id="manualTableWrap" style="overflow:auto;max-height:60vh;min-height:200px;resize:vertical;border:1px solid var(--border);border-radius:6px;position:relative;">
+    <table class="csv-table" id="manualTable" style="min-width:max-content;">
+      <thead id="manualTableHead" style="position:sticky;top:0;z-index:10;"></thead>
       <tbody id="manualTableBody"></tbody>
     </table>
   </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:right;">↕ Drag bottom-right corner to resize</div>
 
   <div class="submit-area">
     <button class="submit-btn" onclick="submitManual()">Submit</button>
