@@ -813,7 +813,7 @@ function onCellEdit(rowIdx, col, value) {
       const row = document.getElementById('csv-row-' + rowIdx);
       if (row) {
         const cells = row.querySelectorAll('td');
-        const cell = cells[idIdx + 2]; // +2 for Row and Status columns
+        const cell = cells[idIdx + 3]; // +3 for Issues, Row, Status columns
         if (cell) cell.querySelector('input').value = pub.id;
       }
     }
@@ -826,7 +826,7 @@ function onCellEdit(rowIdx, col, value) {
     const row = document.getElementById('csv-row-' + rowIdx);
     if (row) {
       const cells = row.querySelectorAll('td');
-      const cell = cells[mIdx + 2];
+      const cell = cells[mIdx + 3];
       if (cell) cell.querySelector('input').value = months[value] || '';
     }
   }
