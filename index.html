@@ -677,6 +677,13 @@ function processCSV(file) {
       const vals = parseCSVLine(lines[i]);
       const row = {};
       headers.forEach((h,idx) => row[h] = (vals[idx]||'').trim());
+      // Always override Vendor Name with logged-in vendor
+      row['Vendor Name'] = currentVendor;
+      // Auto-fill Publication ID from Publication Name if present
+      if (row['Publication Name']) {
+        const pub = publications.find(p => p.name === row['Publication Name'] && p.vendor === currentVendor);
+        if (pub) row['Publication ID'] = pub.id;
+      }
       const errors = validateCSVRow(row);
       csvRows.push({row, errors, valid: errors.length === 0});
     }
@@ -755,6 +762,12 @@ function renderCSVResults() {
       const val = r.row[c] || '';
       if (readonlyCols.has(c)) {
         return `<td><input type="text" value="${val}" readonly style="background:var(--bg);color:var(--muted);width:100%;min-width:80px;border:none;font-size:11px;padding:3px 5px;" /></td>`;
+      }
+      // Publication Name — filtered to vendor
+      if (c === 'Publication Name') {
+        const pubOpts = getPubNames().map(n => `<option value="${n}" ${n===val?'selected':''}>${n}</option>`).join('');
+        return `<td><select data-row="${i}" data-col="${c}" onchange="onCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:180px;font-size:11px;padding:3px 4px;border:1px solid var(--border);border-radius:3px;background:var(--white);">
+          <option value="">—</option>${pubOpts}</select></td>`;
       }
       if (colOptions[c]) {
         const opts = colOptions[c].map(o => `<option value="${o}" ${o===val?'selected':''}>${o}</option>`).join('');
