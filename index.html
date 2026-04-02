@@ -84,8 +84,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .csv-stat.err{background:var(--error-light);color:var(--error);}
 .csv-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:6px;}
 .csv-table{width:100%;border-collapse:collapse;font-size:12px;}
-.csv-table th{background:var(--aws);color:rgba(255,255,255,0.8);padding:8px 12px;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:10;}
-.csv-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.csv-table th{background:var(--aws);color:rgba(255,255,255,0.8);padding:10px 14px;text-align:left;font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap;position:sticky;top:0;z-index:10;}
+.csv-table td input[type=text],.csv-table td input[type=number],.csv-table td input[type=url]{font-size:14px !important;padding:8px 10px !important;min-height:38px;}
+.csv-table td select{font-size:14px !important;padding:8px 10px !important;min-height:38px;}
+.csv-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:14px;}
 .csv-table tr:last-child td{border-bottom:none;}
 .csv-table tr.row-ok td{background:var(--white);}
 .csv-table tr.row-err td{background:var(--error-light);}
@@ -268,7 +270,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     <span style="font-size:12px;color:var(--muted);" id="manualRowCount">1 row</span>
   </div>
 
-  <div class="csv-table-wrap" id="manualTableWrap" style="overflow:auto;max-height:60vh;min-height:200px;resize:vertical;border:1px solid var(--border);border-radius:6px;position:relative;">
+  <div class="csv-table-wrap" id="manualTableWrap" style="overflow:auto;max-height:65vh;min-height:300px;resize:both;border:1px solid var(--border);border-radius:6px;position:relative;cursor:grab;" onmousedown="startDrag(event,this)" id="manualTableWrap">
     <table class="csv-table" id="manualTable" style="min-width:max-content;">
       <thead id="manualTableHead" style="position:sticky;top:0;z-index:10;"></thead>
       <tbody id="manualTableBody"></tbody>
@@ -1073,6 +1075,27 @@ function resetManual() {
   document.getElementById('manualErrorSummary').style.display = 'none';
 }
 
+// ── DRAG TO SCROLL TABLE ─────────────────────────────────────────────────
+function startDrag(e, el) {
+  // Only drag on the wrapper itself, not on inputs/selects
+  if (e.target !== el && e.target.tagName !== 'TH') return;
+  e.preventDefault();
+  el.style.cursor = 'grabbing';
+  const startX = e.clientX + el.scrollLeft;
+  const startY = e.clientY + el.scrollTop;
+
+  function onMove(ev) {
+    el.scrollLeft = startX - ev.clientX;
+    el.scrollTop  = startY - ev.clientY;
+  }
+  function onUp() {
+    el.style.cursor = 'grab';
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  }
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+}
 </script>
 </body>
 </html>
