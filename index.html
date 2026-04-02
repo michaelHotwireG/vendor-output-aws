@@ -242,6 +242,13 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
   <div class="csv-results" id="csvResults">
     <div class="csv-summary" id="csvSummary"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin:0 0.5rem 8px;">
+      <span style="font-size:12px;color:var(--muted);">Zoom</span>
+      <button onclick="zoomCSV(-1)" title="Zoom out" style="width:28px;height:28px;border:1px solid var(--border);border-radius:4px;background:var(--white);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;">−</button>
+      <button onclick="zoomCSV(1)" title="Zoom in" style="width:28px;height:28px;border:1px solid var(--border);border-radius:4px;background:var(--white);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;">+</button>
+      <button onclick="zoomCSV(0)" title="Reset zoom" style="padding:0 10px;height:28px;border:1px solid var(--border);border-radius:4px;background:var(--white);cursor:pointer;font-size:11px;color:var(--muted);">Reset</button>
+      <span style="font-size:11px;color:var(--muted);" id="csvZoomLabel">100%</span>
+    </div>
     <div class="csv-table-wrap" style="overflow:auto;max-height:70vh;min-height:300px;height:50vh;resize:both;border:1px solid var(--border);border-radius:8px;margin:0 0.5rem;">
       <table class="csv-table" id="csvTable" style="min-width:max-content;">
         <thead id="csvTableHead" style="position:sticky;top:0;z-index:10;"></thead>
@@ -1121,6 +1128,35 @@ function zoomTable(dir) {
 
   const label = document.getElementById('zoomLabel');
   if (label) label.textContent = tableZoom + '%';
+}
+
+// ── ZOOM CSV TABLE ───────────────────────────────────────────────────────
+let csvZoom = 100;
+
+function zoomCSV(dir) {
+  const idx = zoomSteps.indexOf(csvZoom);
+  if (dir === 0) csvZoom = 100;
+  else if (dir === 1 && idx < zoomSteps.length - 1) csvZoom = zoomSteps[idx + 1];
+  else if (dir === -1 && idx > 0) csvZoom = zoomSteps[idx - 1];
+
+  const table = document.getElementById('csvTable');
+  if (table) table.style.fontSize = (csvZoom / 100 * 14) + 'px';
+
+  const cells = table ? table.querySelectorAll('td input, td select') : [];
+  cells.forEach(el => {
+    el.style.fontSize = (csvZoom / 100 * 14) + 'px';
+    el.style.padding = (csvZoom / 100 * 8) + 'px ' + (csvZoom / 100 * 10) + 'px';
+    el.style.minHeight = (csvZoom / 100 * 38) + 'px';
+  });
+
+  const ths = table ? table.querySelectorAll('th') : [];
+  ths.forEach(th => th.style.fontSize = (csvZoom / 100 * 13) + 'px');
+
+  const tds = table ? table.querySelectorAll('td') : [];
+  tds.forEach(td => td.style.padding = (csvZoom / 100 * 12) + 'px ' + (csvZoom / 100 * 14) + 'px');
+
+  const label = document.getElementById('csvZoomLabel');
+  if (label) label.textContent = csvZoom + '%';
 }
 
 // ── DRAG TO SCROLL TABLE ─────────────────────────────────────────────────
