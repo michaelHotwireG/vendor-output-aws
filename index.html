@@ -721,6 +721,8 @@ function validateCSVRow(row) {
   else if (isNaN(parseInt(row['Clicks']))) errors.push('Clicks must be a whole number');
   if (row['Campaign Type'] === 'AWS Marketplace - Thematic' && !row['Campaign Theme'])
     errors.push('Campaign Theme required for Thematic');
+  if (row['Campaign Type'] === 'AWS Marketplace - Thematic' && (row['Campaign Theme'] === 'BizApps' || row['Campaign Theme'] === 'Industry') && !row['Campaign Sub-theme'])
+    errors.push('Campaign Sub-theme required for BizApps / Industry');
   return errors;
 }
 
