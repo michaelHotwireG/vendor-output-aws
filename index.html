@@ -312,7 +312,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPIoXm4zVaM0fQqgRylD5H9JuWu6y36sbalN4EHbsw4WJoO6ywXy5SHz2ZKRajmcP3/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5KLQYbNngSj5U3JV0T_lLCjcF2-3dbXshelMUfv172s__GURJpJqibGiUKZksXyLj/exec";
 
 // ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
@@ -558,7 +558,27 @@ function doLogin() {
       document.getElementById('headerUser').style.display = 'block';
       document.getElementById('logoutBtn').style.display = 'block';
       document.getElementById('loginSection').style.display = 'none';
-      showPortal();
+      // Fetch publications live from Google Sheet
+      btn.textContent = 'Loading publications...';
+      btn.disabled = true;
+      fetch(SCRIPT_URL + '?action=getPublications')
+        .then(r => r.json())
+        .then(pd => {
+          if (pd.status === 'success' && pd.publications && pd.publications.length > 0) {
+            // Override hardcoded publications with live data from sheet
+            publications.length = 0;
+            pd.publications.forEach(p => publications.push(p));
+          }
+          btn.textContent = 'Sign in';
+          btn.disabled = false;
+          showPortal();
+        })
+        .catch(() => {
+          // If fetch fails, fall back to hardcoded publications
+          btn.textContent = 'Sign in';
+          btn.disabled = false;
+          showPortal();
+        });
     } else if (data.status === 'invalid') {
       document.getElementById('loginError').textContent = 'Incorrect username or password. Please try again.';
       document.getElementById('loginError').style.display = 'block';
