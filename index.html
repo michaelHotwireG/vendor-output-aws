@@ -937,10 +937,19 @@ const manualReadonly = new Set(['Vendor Name','Publication ID','Promotion Month'
 
 // Publication dropdown — built fresh each render using current vendor
 function getPubNames() {
+  const v = (currentVendor || '').toLowerCase().trim();
   return publications
-    .filter(p => p.vendor === currentVendor)
+    .filter(p => p.vendor.toLowerCase().trim() === v)
     .sort((a,b) => a.name.localeCompare(b.name))
     .map(p => p.name);
+}
+
+function getPubByName(name) {
+  const v = (currentVendor || '').toLowerCase().trim();
+  return publications.find(p =>
+    p.vendor.toLowerCase().trim() === v &&
+    p.name.toLowerCase().trim() === (name || '').toLowerCase().trim()
+  );
 }
 
 let manualRows = [];
@@ -1050,7 +1059,7 @@ function onManualCellEdit(rowIdx, col, value) {
 
   // Auto-fill derived fields
   if (col === 'Publication Name') {
-    const pub = publications.find(p => p.name === value);
+    const pub = getPubByName(value);
     if (pub) manualRows[rowIdx]['Publication ID'] = pub.id;
   }
   if (col === 'Promotion Name') {
