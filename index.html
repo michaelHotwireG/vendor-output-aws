@@ -489,7 +489,13 @@ let promoThemeMap = [];
 function getThemeForPromo(promoName) {
   if (!promoName) return null;
   const p = promoName.trim().toLowerCase();
-  // Find the entry whose promoName the promotion starts with
+  // First try exact match
+  for (const rule of promoThemeMap) {
+    if (p === rule.promoName.trim().toLowerCase()) {
+      return { theme: rule.theme, subtheme: rule.subtheme };
+    }
+  }
+  // Then try startsWith (for prefix-based rules)
   for (const rule of promoThemeMap) {
     if (p.startsWith(rule.promoName.trim().toLowerCase())) {
       return { theme: rule.theme, subtheme: rule.subtheme };
