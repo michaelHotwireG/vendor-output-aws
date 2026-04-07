@@ -483,6 +483,29 @@ const publications = [
   {id:"PUB0163",vendor:"VMBlog",name:"VMBlog"}
 ];
 
+const promoThemeMap = [
+  { match: /^D\/AI/i,                       theme: "Data & AI",        subtheme: "" },
+  { match: /^DEV/i,                           theme: "DevOps/Developer",  subtheme: "" },
+  { match: /^IND\s*-?\s*FinServ/i,          theme: "Industry",          subtheme: "Industry - Finserv" },
+  { match: /^IND\s*-?\s*Healthcare/i,       theme: "Industry",          subtheme: "Industry - Healthcare" },
+  { match: /^IND\s*-?\s*M&E/i,              theme: "Industry",          subtheme: "Industry - M&E" },
+  { match: /^SEC/i,                           theme: "Security",          subtheme: "" },
+  { match: /^BizApps\s*-\s*HC/i,            theme: "BizApps",           subtheme: "BizApps - Customer Service in HC" },
+  { match: /^BizApps\s*-\s*Productivity/i,  theme: "BizApps",           subtheme: "BizApps - Productivity" },
+  { match: /^BizApps\s*-\s*Customer Exp/i,  theme: "BizApps",           subtheme: "BizApps - Customer Service" },
+  { match: /^BizApps\s*-\s*Salesforce/i,    theme: "BizApps",           subtheme: "BizApps - Salesforce" },
+  { match: /^M\d+$/i,                        theme: "Self Service",      subtheme: "AI Module" },
+  { match: /^AI Module/i,                     theme: "Self Service",      subtheme: "AI Module" },
+  { match: /^Confluent|^Elastic|^Palo Alto|^Databricks|^Fortinet|^MongoDB|^Security FEB|^MP for Builders/i, theme: "Self Service", subtheme: "AI Module" }
+];
+
+function getThemeForPromo(promoName) {
+  for (const rule of promoThemeMap) {
+    if (rule.match.test(promoName)) return { theme: rule.theme, subtheme: rule.subtheme };
+  }
+  return null;
+}
+
 const promotionMonths = {
   "D/AI JAN":"2026-01",
   "D/AI FEB":"2026-02",
@@ -683,8 +706,19 @@ function processCSV(file) {
       row['Vendor Name'] = currentVendor;
       // Auto-fill Publication ID from Publication Name if present
       if (row['Publication Name']) {
-        const pub = publications.find(p => p.name === row['Publication Name'] && p.vendor === currentVendor);
+        const pub = getPubByName(row['Publication Name']);
         if (pub) row['Publication ID'] = pub.id;
+      }
+      // Auto-fill Campaign Theme and Sub-theme from Promotion Name
+      if (row['Promotion Name']) {
+        const themeMap = getThemeForPromo(row['Promotion Name']);
+        if (themeMap) {
+          if (!row['Campaign Theme']) row['Campaign Theme'] = themeMap.theme;
+          if (!row['Campaign Sub-theme']) row['Campaign Sub-theme'] = themeMap.subtheme;
+          if (!row['Campaign Type']) {
+            row['Campaign Type'] = themeMap.theme === 'Self Service' ? 'AWS Marketplace - Self Service' : 'AWS Marketplace - Thematic';
+          }
+        }
       }
       const errors = validateCSVRow(row);
       csvRows.push({row, errors, valid: errors.length === 0});
@@ -822,6 +856,16 @@ function onCellEdit(rowIdx, col, value) {
   }
   if (col === 'Promotion Name') {
     csvRows[rowIdx].row['Promotion Month'] = promotionMonths[value] || '';
+    const themeMap = getThemeForPromo(value);
+    if (themeMap) {
+      csvRows[rowIdx].row['Campaign Theme'] = themeMap.theme;
+      csvRows[rowIdx].row['Campaign Sub-theme'] = themeMap.subtheme;
+      if (themeMap.theme === 'Self Service') {
+        csvRows[rowIdx].row['Campaign Type'] = 'AWS Marketplace - Self Service';
+      } else {
+        csvRows[rowIdx].row['Campaign Type'] = 'AWS Marketplace - Thematic';
+      }
+    }
   }
 
   // Re-validate and full re-render so error highlighting updates correctly
@@ -1039,6 +1083,17 @@ function onManualCellEdit(rowIdx, col, value) {
   }
   if (col === 'Promotion Name') {
     manualRows[rowIdx]['Promotion Month'] = promotionMonths[value] || '';
+    const themeMap = getThemeForPromo(value);
+    if (themeMap) {
+      manualRows[rowIdx]['Campaign Theme'] = themeMap.theme;
+      manualRows[rowIdx]['Campaign Sub-theme'] = themeMap.subtheme;
+      // Auto-set Campaign Type based on theme
+      if (themeMap.theme === 'Self Service') {
+        manualRows[rowIdx]['Campaign Type'] = 'AWS Marketplace - Self Service';
+      } else {
+        manualRows[rowIdx]['Campaign Type'] = 'AWS Marketplace - Thematic';
+      }
+    }
   }
 
   renderManualTable();
