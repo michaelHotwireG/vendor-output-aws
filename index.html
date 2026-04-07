@@ -813,70 +813,22 @@ function renderCSVResults() {
 }
 
 function onCellEdit(rowIdx, col, value) {
-  // Update the data
   csvRows[rowIdx].row[col] = value;
 
   // Handle derived fields
   if (col === 'Publication Name') {
-    const pub = publications.find(p => p.name === value);
-    if (pub) {
-      csvRows[rowIdx].row['Publication ID'] = pub.id;
-      // Update the readonly Publication ID cell
-      const allCols = ['Campaign Type','Vendor Name','Publication ID','Publication Name','Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme','Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions','LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'];
-      const idIdx = allCols.indexOf('Publication ID');
-      const row = document.getElementById('csv-row-' + rowIdx);
-      if (row) {
-        const cells = row.querySelectorAll('td');
-        const cell = cells[idIdx + 3]; // +3 for Issues, Row, Status columns
-        if (cell) cell.querySelector('input').value = pub.id;
-      }
-    }
+    const pub = getPubByName(value);
+    if (pub) csvRows[rowIdx].row['Publication ID'] = pub.id;
   }
   if (col === 'Promotion Name') {
-    const months = {"D/AI FEB":"February","Security MAR":"March","BizApps APR":"April","Industry MAY":"May","Infrastructure JUN":"June","Migration JUL":"July","Data & AI AUG":"August","Security SEP":"September"};
-    csvRows[rowIdx].row['Promotion Month'] = months[value] || '';
-    const allCols = ['Campaign Type','Vendor Name','Publication ID','Publication Name','Promotion Name','Promotion Month','Campaign Theme','Campaign Sub-theme','Tactic Type','TRK','CTA URL','Delivered Sends','Opens','Impressions','LinkedIn Likes','LinkedIn Comments','LinkedIn Views','Clicks','Unique Clicks','Notes'];
-    const mIdx = allCols.indexOf('Promotion Month');
-    const row = document.getElementById('csv-row-' + rowIdx);
-    if (row) {
-      const cells = row.querySelectorAll('td');
-      const cell = cells[mIdx + 3];
-      if (cell) cell.querySelector('input').value = months[value] || '';
-    }
+    csvRows[rowIdx].row['Promotion Month'] = promotionMonths[value] || '';
   }
 
-  // Re-validate the row
+  // Re-validate and full re-render so error highlighting updates correctly
   const errors = validateCSVRow(csvRows[rowIdx].row);
   csvRows[rowIdx].errors = errors;
   csvRows[rowIdx].valid = errors.length === 0;
-
-  // Update status badge
-  const statusEl = document.getElementById('row-status-' + rowIdx);
-  const rowEl = document.getElementById('csv-row-' + rowIdx);
-  const errEl = document.getElementById('row-errors-' + rowIdx);
-  if (statusEl) {
-    statusEl.textContent = errors.length === 0 ? 'Valid' : 'Error';
-    statusEl.className = 'row-status ' + (errors.length === 0 ? 'ok' : 'err');
-  }
-  if (rowEl) rowEl.className = errors.length === 0 ? 'row-ok' : 'row-err';
-  if (errEl) errEl.innerHTML = errors.length ? '<div class="err-list">'+errors.join('<br>')+'</div>' : '—';
-
-  // Update summary counts
-  const total = csvRows.length;
-  const valid = csvRows.filter(r => r.valid).length;
-  const errs  = total - valid;
-  document.getElementById('csvSummary').innerHTML =
-    `<div class="csv-stat total">${total} rows total</div>` +
-    `<div class="csv-stat ok">${valid} valid</div>` +
-    (errs > 0 ? `<div class="csv-stat err">${errs} with errors</div>` : '');
-
-  // Update submit button
-  const btn = document.getElementById('csvSubmitBtn');
-  const note = document.getElementById('csvSubmitNote');
-  btn.disabled = valid === 0;
-  note.textContent = valid > 0
-    ? `${valid} valid row${valid>1?'s':''} will be submitted.${errs>0?' '+errs+' row(s) with errors will be skipped.':''}`
-    : 'No valid rows to submit.';
+  renderCSVResults();
 }
 
 function submitCSV() {
