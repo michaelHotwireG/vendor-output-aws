@@ -314,7 +314,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5KLQYbNngSj5U3JV0T_lLCjcF2-3dbXshelMUfv172s__GURJpJqibGiUKZksXyLj/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzl2hiJhaDkf8qCjBpIoN1LtBb5Q8ZDjv6FLXziYhal5fkXWMsocX8ae801b5wl_-he/exec";
 
 // ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
@@ -483,25 +483,17 @@ const publications = [
   {id:"PUB0163",vendor:"VMBlog",name:"VMBlog"}
 ];
 
-const promoThemeMap = [
-  { match: /^D\/AI/i,                       theme: "Data & AI",        subtheme: "" },
-  { match: /^DEV/i,                           theme: "DevOps/Developer",  subtheme: "" },
-  { match: /^IND\s*-?\s*FinServ/i,          theme: "Industry",          subtheme: "Industry - Finserv" },
-  { match: /^IND\s*-?\s*Healthcare/i,       theme: "Industry",          subtheme: "Industry - Healthcare" },
-  { match: /^IND\s*-?\s*M&E/i,              theme: "Industry",          subtheme: "Industry - M&E" },
-  { match: /^SEC/i,                           theme: "Security",          subtheme: "" },
-  { match: /^BizApps\s*-\s*HC/i,            theme: "BizApps",           subtheme: "BizApps - Customer Service in HC" },
-  { match: /^BizApps\s*-\s*Productivity/i,  theme: "BizApps",           subtheme: "BizApps - Productivity" },
-  { match: /^BizApps\s*-\s*Customer Exp/i,  theme: "BizApps",           subtheme: "BizApps - Customer Service" },
-  { match: /^BizApps\s*-\s*Salesforce/i,    theme: "BizApps",           subtheme: "BizApps - Salesforce" },
-  { match: /^M\d+$/i,                        theme: "Self Service",      subtheme: "AI Module" },
-  { match: /^AI Module/i,                     theme: "Self Service",      subtheme: "AI Module" },
-  { match: /^Confluent|^Elastic|^Palo Alto|^Databricks|^Fortinet|^MongoDB|^Security FEB|^MP for Builders/i, theme: "Self Service", subtheme: "AI Module" }
-];
+// Live promo mapping fetched from Google Sheet at login
+let promoThemeMap = [];
 
 function getThemeForPromo(promoName) {
+  if (!promoName) return null;
+  const p = promoName.trim().toLowerCase();
+  // Find the entry whose promoName the promotion starts with
   for (const rule of promoThemeMap) {
-    if (rule.match.test(promoName)) return { theme: rule.theme, subtheme: rule.subtheme };
+    if (p.startsWith(rule.promoName.trim().toLowerCase())) {
+      return { theme: rule.theme, subtheme: rule.subtheme };
+    }
   }
   return null;
 }
@@ -583,27 +575,29 @@ function doLogin() {
       document.getElementById('headerUser').style.display = 'block';
       document.getElementById('logoutBtn').style.display = 'block';
       document.getElementById('loginSection').style.display = 'none';
-      // Fetch publications live from Google Sheet
-      btn.textContent = 'Loading publications...';
+      // Fetch live data from Google Sheet
+      btn.textContent = 'Loading...';
       btn.disabled = true;
-      fetch(SCRIPT_URL + '?action=getPublications')
-        .then(r => r.json())
-        .then(pd => {
-          if (pd.status === 'success' && pd.publications && pd.publications.length > 0) {
-            // Override hardcoded publications with live data from sheet
-            publications.length = 0;
-            pd.publications.forEach(p => publications.push(p));
-          }
-          btn.textContent = 'Sign in';
-          btn.disabled = false;
-          showPortal();
-        })
-        .catch(() => {
-          // If fetch fails, fall back to hardcoded publications
-          btn.textContent = 'Sign in';
-          btn.disabled = false;
-          showPortal();
-        });
+      Promise.all([
+        fetch(SCRIPT_URL + '?action=getPublications').then(r => r.json()).catch(() => null),
+        fetch(SCRIPT_URL + '?action=getPromoMapping').then(r => r.json()).catch(() => null)
+      ]).then(([pd, pm]) => {
+        if (pd && pd.status === 'success' && pd.publications && pd.publications.length > 0) {
+          publications.length = 0;
+          pd.publications.forEach(p => publications.push(p));
+        }
+        if (pm && pm.status === 'success' && pm.mapping && pm.mapping.length > 0) {
+          promoThemeMap.length = 0;
+          pm.mapping.forEach(m => promoThemeMap.push(m));
+        }
+        btn.textContent = 'Sign in';
+        btn.disabled = false;
+        showPortal();
+      }).catch(() => {
+        btn.textContent = 'Sign in';
+        btn.disabled = false;
+        showPortal();
+      });
     } else if (data.status === 'invalid') {
       document.getElementById('loginError').textContent = 'Incorrect username or password. Please try again.';
       document.getElementById('loginError').style.display = 'block';
