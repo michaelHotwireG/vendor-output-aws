@@ -648,8 +648,6 @@ function doLogin() {
         btn.textContent = 'Sign in';
         btn.disabled = false;
         showPortal();
-        // If manual table was already rendered before data loaded, refresh it
-        if (manualRows.length > 0) renderManualTable();
       }).catch(() => {
         btn.textContent = 'Sign in';
         btn.disabled = false;
