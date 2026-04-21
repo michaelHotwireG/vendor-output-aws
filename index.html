@@ -648,6 +648,8 @@ function doLogin() {
         btn.textContent = 'Sign in';
         btn.disabled = false;
         showPortal();
+        // If manual table was already rendered before data loaded, refresh it
+        if (manualRows.length > 0) renderManualTable();
       }).catch(() => {
         btn.textContent = 'Sign in';
         btn.disabled = false;
@@ -702,7 +704,8 @@ function showCSV() {
 function showForm() {
   hideAll();
   document.getElementById('formSection').style.display = 'block';
-  initManualTable();
+  // Use setTimeout so any in-flight promoNamesList population completes first
+  setTimeout(() => initManualTable(), 0);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -933,10 +936,12 @@ function getManualColOptions() {
 const manualReadonly = new Set(['Vendor Name','Publication ID']);
 
 function getPromoNames() {
-  // Use live col E list if available, fall back to col U keys
-  return promoNamesList.length > 0
-    ? promoNamesList
-    : promoThemeMap.map(r => r.promoName);
+  // 1st choice: col E list from GAS (new deployment)
+  if (promoNamesList.length > 0) return promoNamesList;
+  // 2nd choice: col U keys from GAS (old deployment)
+  if (promoThemeMap.length > 0) return promoThemeMap.map(r => r.promoName);
+  // 3rd choice: hardcoded promotionMonths keys as last resort
+  return Object.keys(promotionMonths);
 }
 
 function getPubNames() {
@@ -1014,6 +1019,7 @@ function renderManualTable() {
     // ── USE SHARED getMissingFields ──
     const missingManual = getMissingFields(row);
 
+    const _mco = getManualColOptions();
     const cells = manualAllCols.map(c => {
       const val = row[c] || '';
       const missing = missingManual.has(c);
@@ -1025,7 +1031,6 @@ function renderManualTable() {
         return `<td class="${missing?'cell-missing':''}"><select onchange="onManualCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 5px;border:1px solid ${missing?'#c0392b':'var(--border)'};border-radius:3px;background:var(--white);">
           <option value="">— select —</option>${opts}</select></td>`;
       }
-      const _mco = getManualColOptions();
       if (_mco[c]) {
         const opts = _mco[c].map(o => `<option value="${o}" ${o===val?'selected':''}>${o}</option>`).join('');
         return `<td class="${missing?'cell-missing':''}"><select onchange="onManualCellEdit(${i},'${c}',this.value)" style="width:100%;min-width:${getColWidth(c)};font-size:11px;padding:4px 5px;border:1px solid ${missing?'#c0392b':'var(--border)'};border-radius:3px;background:var(--white);">
