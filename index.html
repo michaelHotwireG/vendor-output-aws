@@ -314,7 +314,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3yJVMly7sJ-5_PSsqa7iKO7BY7GGMISiIuiLdBmZsbtCTHlpXThAzPPj8UXMDttcB/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxX5ljLlnsu8PVrxrTLps92NiwvWqgpmLA2iEtFKBjKgPRyeCA8lG2l5dcKV-4TkJth/exec";
 
 // ── PUBLICATION DATA ──────────────────────────────────────────────────────
 const publications = [
@@ -484,16 +484,19 @@ const publications = [
 ];
 
 // Live promo mapping fetched from Google Sheet at login
-let promoThemeMap = [];
+// promoThemeMap  — rows from col U/V/W: { promoName, theme, subtheme }
+// promoNamesList — master dropdown list from col E
+let promoThemeMap  = [];
+let promoNamesList = [];
 
 function getThemeForPromo(promoName) {
   if (!promoName) return null;
   const p = promoName.trim().toLowerCase();
+  // Selected col-E value CONTAINS the col-U substring → use that row's V/W
   for (const rule of promoThemeMap) {
-    if (p === rule.promoName.trim().toLowerCase()) return { theme: rule.theme, subtheme: rule.subtheme };
-  }
-  for (const rule of promoThemeMap) {
-    if (p.startsWith(rule.promoName.trim().toLowerCase())) return { theme: rule.theme, subtheme: rule.subtheme };
+    if (p.includes(rule.promoName.trim().toLowerCase())) {
+      return { theme: rule.theme, subtheme: rule.subtheme };
+    }
   }
   return null;
 }
@@ -631,9 +634,16 @@ function doLogin() {
           publications.length = 0;
           pd.publications.forEach(p => publications.push(p));
         }
-        if (pm && pm.status === 'success' && pm.mapping && pm.mapping.length > 0) {
-          promoThemeMap.length = 0;
-          pm.mapping.forEach(m => promoThemeMap.push(m));
+        if (pm && pm.status === 'success') {
+          if (pm.mapping && pm.mapping.length > 0) {
+            promoThemeMap.length = 0;
+            pm.mapping.forEach(m => promoThemeMap.push(m));
+          }
+          // promoNames comes from col E — the master dropdown list
+          if (pm.promoNames && pm.promoNames.length > 0) {
+            promoNamesList.length = 0;
+            pm.promoNames.forEach(n => promoNamesList.push(n));
+          }
         }
         btn.textContent = 'Sign in';
         btn.disabled = false;
@@ -926,7 +936,10 @@ const manualColOptions = {
 const manualReadonly = new Set(['Vendor Name','Publication ID']);
 
 function getPromoNames() {
-  return promoThemeMap.map(r => r.promoName);
+  // Use live col E list if available, fall back to col U keys
+  return promoNamesList.length > 0
+    ? promoNamesList
+    : promoThemeMap.map(r => r.promoName);
 }
 
 function getPubNames() {
